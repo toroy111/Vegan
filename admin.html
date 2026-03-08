@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>訂單管理</title>
+</head>
+
+<body>
+
+<h2>訂單列表</h2>
+
+<table border="1" id="ordersTable">
+
+<tr>
+<th>ID</th>
+<th>姓名</th>
+<th>電話</th>
+<th>地址</th>
+<th>問題</th>
+</tr>
+
+</table>
+
+<script>
+
+async function loadOrders(){
+
+const res = await fetch("http://localhost:3000/orders");
+const data = await res.json();
+
+let html = "";
+
+data.forEach(order => {
+
+html += `
+<tr>
+<td>${order.id}</td>
+<td>${order.name}</td>
+<td>${order.phone}</td>
+<td>${order.address}</td>
+<td>${order.description}</td>
+</tr>
+`;
+
+});
+
+document.getElementById("ordersTable").innerHTML += html;
+
+}
+
+loadOrders();
+
+</script>
+
+</body>
+</html>
