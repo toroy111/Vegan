@@ -20,6 +20,7 @@
         .status-completed { background: #2ecc71; color: #fff; }
         .action-btn { background: var(--primary-color); color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
         .note-box { margin-top: 5px; padding: 4px 8px; background: #fff2cc; border-left: 3px solid #f1c40f; font-size: 13px; color: #7f8c8d; }
+        .contact-info { font-size: 12px; color: #2980b9; margin-top: 4px; background: #e8f4f8; padding: 4px; border-radius: 4px; display: inline-block; }
     </style>
 </head>
 <body>
@@ -38,7 +39,7 @@
                 <tr>
                     <th>訂單編號</th>
                     <th>取餐日期 / 時間</th>
-                    <th>類型/桌號</th>
+                    <th>顧客資訊 (桌號/聯絡方式)</th>
                     <th>點餐明細與備註</th>
                     <th>總金額</th>
                     <th>狀態</th>
@@ -63,7 +64,6 @@
                 return;
             }
 
-            // 讓最新的訂單排在上面
             orders.reverse();
 
             let tbodyHtml = '';
@@ -72,15 +72,23 @@
                 let badgeClass = o.status === '新訂單' ? 'status-pending' : 'status-completed';
                 let actionBtn = o.status === '新訂單' ? `<button class="action-btn" onclick="completeOrder(${o.id})">出餐完成</button>` : '已結案';
                 
-                // 處理備註顯示樣式
                 let noteHtml = o.note && o.note !== '無' ? `<div class="note-box">📝 備註：${o.note}</div>` : '';
-                // 處理日期顯示（若舊訂單沒日期則給預設值）
                 let displayDate = o.date ? o.date : '未指定日期';
+
+                // 處理新增的電話與 LINE 顯示格式
+                let customerPhone = o.phone ? o.phone : '未填寫';
+                let customerLine = o.line ? o.line : '未填寫';
 
                 tbodyHtml += `<tr>
                     <td>#${o.id}</td>
                     <td><strong>${displayDate}</strong><br><span style="color:#7f8c8d; font-size:12px;">${o.time}</span></td>
-                    <td><strong>${o.type}</strong></td>
+                    <td>
+                        <strong>${o.type}</strong><br>
+                        <div class="contact-info">
+                            📞 電話: ${customerPhone}<br>
+                            💬 LINE: ${customerLine}
+                        </div>
+                    </td>
                     <td style="font-size:14px;">
                         <div>${itemsDesc}</div>
                         ${noteHtml}
