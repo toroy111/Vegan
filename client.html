@@ -3,54 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>珍愛家素食早午餐 - 線上點餐</title>
+    <title>珍愛家素食早午餐 - 全品項線上點餐</title>
     <style>
         :root { --primary-color: #e67e22; --secondary-color: #27ae60; --bg-color: #f9f9f9; --dark-color: #2c3e50; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
         body { background-color: var(--bg-color); color: var(--dark-color); padding-bottom: 50px; }
         header { background-color: var(--primary-color); color: white; padding: 15px; text-align: center; }
         
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-        .shop-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-        @media (max-width: 768px) { .shop-layout { grid-template-columns: 1fr; } }
+        .container { max-width: 1400px; margin: 20px auto; padding: 0 15px; }
+        .shop-layout { display: grid; grid-template-columns: 2.5fr 1fr; gap: 20px; }
+        @media (max-width: 992px) { .shop-layout { grid-template-columns: 1fr; } }
         
         .menu-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .category-title { color: var(--secondary-color); border-left: 4px solid var(--secondary-color); padding-left: 10px; margin: 20px 0 10px 0; }
+        .category-title { color: var(--secondary-color); border-left: 4px solid var(--secondary-color); padding-left: 10px; margin: 25px 0 15px 0; font-size: 20px; }
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         @media (max-width: 600px) { .menu-grid { grid-template-columns: 1fr; } }
         
-        .menu-item { border: 1px solid #eee; padding: 15px; border-radius: 6px; display: flex; flex-direction: column; justify-content: space-between; }
-        .item-name { font-weight: bold; font-size: 16px; margin-bottom: 8px; }
+        .menu-item { border: 1px solid #eee; padding: 15px; border-radius: 6px; display: flex; flex-direction: column; justify-content: space-between; background: #fff; }
+        .menu-item:hover { border-color: var(--primary-color); }
+        .item-name { font-weight: bold; font-size: 16px; margin-bottom: 8px; color: #333; }
         
         .option-group { margin: 8px 0; display: flex; flex-wrap: wrap; gap: 5px; }
-        .opt-btn { background: #f0f0f0; border: 1px solid #ddd; padding: 4px 8px; font-size: 12px; border-radius: 4px; cursor: pointer; }
+        .opt-btn { background: #f0f0f0; border: 1px solid #ddd; padding: 5px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; transition: 0.2s; }
         .opt-btn.selected { background: var(--secondary-color); color: white; border-color: var(--secondary-color); }
         
-        .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .item-price { color: #c0392b; font-weight: bold; }
-        .add-btn { background: var(--primary-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; border-top: 1px dotted #eee; padding-top: 8px; }
+        .item-price { color: #c0392b; font-weight: bold; font-size: 16px; }
+        .add-btn { background: var(--primary-color); color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .add-btn:hover { background: #d35400; }
         
         .cart-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); height: fit-content; position: sticky; top: 20px; }
-        .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
-        .cart-total { font-size: 18px; font-weight: bold; text-align: right; margin: 20px 0; color: #c0392b; }
-        .submit-order-btn { width: 100%; background: var(--secondary-color); color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; align-items: center; }
+        .cart-total { font-size: 20px; font-weight: bold; text-align: right; margin: 20px 0; color: #c0392b; }
+        .submit-order-btn { width: 100%; background: var(--secondary-color); color: white; border: none; padding: 14px; font-size: 18px; font-weight: bold; border-radius: 6px; cursor: pointer; }
         
         .input-field { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
         .flex-inputs { display: flex; gap: 5px; margin-bottom: 10px; }
-        label { font-size: 14px; font-weight: bold; display: block; margin-bottom: 4px; }
+        label { font-size: 14px; font-weight: bold; display: block; margin-bottom: 4px; color: #555; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>珍愛家素食早午餐</h1>
-        <p>電話：0908-313913 | 歡迎線上點餐</p>
+        <h1>珍愛家素食早午餐 (JLH BRUNCH)</h1>
+        <p>電話：0908-313913 | 營業時間：二至五 5:30~13:00 / 六日 5:30~13:30 (每週一公休)</p>
     </header>
 
     <div class="container">
         <div class="shop-layout">
             <div class="menu-section">
-                <h2>美味菜單</h2>
+                <h2>📋 美味線上菜單 (全品項)</h2>
                 <div id="menu-renderer"></div>
             </div>
             
@@ -64,24 +66,24 @@
                         <div style="width: 40%;">
                             <label>🍽️ 方式：</label>
                             <select id="dining-type" class="input-field">
-                                <option value="內用">內用</option>
                                 <option value="外帶">外帶</option>
+                                <option value="內用">內用</option>
                             </select>
                         </div>
                         <div style="width: 60%;">
                             <label>👤 桌號 / 姓名：</label>
-                            <input type="text" id="table-num" placeholder="例如：3號桌 / 王小明" class="input-field">
+                            <input type="text" id="table-num" placeholder="例如：3號桌 / 陳小姐" class="input-field">
                         </div>
                     </div>
 
                     <label>📞 聯絡電話 (必填)：</label>
-                    <input type="tel" id="user-phone" placeholder="例如：0912-345678" class="input-field" required>
+                    <input type="tel" id="user-phone" placeholder="填寫手機號碼" class="input-field" required>
 
                     <label>💬 LINE ID (選填)：</label>
-                    <input type="text" id="user-line" placeholder="例如：line12345" class="input-field">
+                    <input type="text" id="user-line" placeholder="方便聯絡通知" class="input-field">
                     
                     <label>✍️ 訂單備註：</label>
-                    <textarea id="order-note" class="input-field" placeholder="例如：去冰 / 蛋餅要酥一點" style="height: 60px; resize: none;"></textarea>
+                    <textarea id="order-note" class="input-field" placeholder="例如：紅茶去冰 / 蛋餅醬少" style="height: 60px; resize: none;"></textarea>
                 </div>
                 <hr>
                 <div id="cart-items-list" style="margin-top: 15px;">
@@ -94,173 +96,94 @@
     </div>
 
     <script>
+        // 依照照片輸入的珍愛家「最完整全品項資料庫」
         const menuData = {
-            "蛋餅類": [
-                { id: "e1", name: "原味蛋餅", price: 25 },
-                { id: "e2", name: "日式蛋餅", price: 35 },
-                { id: "e3", name: "九層塔蛋餅", price: 35 },
-                { id: "e4", name: "起士蛋餅", price: 35 },
-                { id: "e5", name: "素肉鬆蛋餅", price: 35 },
-                { id: "e6", name: "蔬菜蛋餅", price: 35 },
-                { id: "e7", name: "火腿蛋餅", price: 35 }
+            "主食系列 (吐司/漢堡/滿福堡)": [
+                { id: "m_01", name: "煎蛋", options: { "白/全麥吐司[無蛋]": 30, "漢堡[無蛋]": 30, "滿福堡[無蛋]": 40 } },
+                { id: "m_02", name: "鮮蔬", options: { "白/全麥吐司[加蛋]": 40, "白/全麥吐司[無蛋]": 25, "漢堡[加蛋]": 40, "漢堡[無蛋]": 25, "滿福堡[加蛋]": 50, "滿福堡[無蛋]": 35 } },
+                { id: "m_03", name: "羅勒起士蛋", options: { "白/全麥吐司[加蛋]": 40, "漢堡[加蛋]": 40, "滿福堡[加蛋]": 50 } },
+                { id: "m_04", name: "起士鮮蔬", options: { "白/全麥吐司[加蛋]": 45, "白/全麥吐司[無蛋]": 30, "漢堡[加蛋]": 45, "漢堡[無蛋]": 30, "滿福堡[加蛋]": 55, "滿福堡[無蛋]": 40 } },
+                { id: "m_05", name: "玉米", options: { "白/全麥吐司[加蛋]": 45, "白/全麥吐司[無蛋]": 30, "漢堡[加蛋]": 45, "漢堡[無蛋]": 30, "滿福堡[加蛋]": 60, "滿福堡[無蛋]": 45 } },
+                { id: "m_06", name: "素肉鬆", options: { "白/全麥吐司[加蛋]": 45, "白/全麥吐司[無蛋]": 30, "漢堡[加蛋]": 45, "漢堡[無蛋]": 30, "滿福堡[加蛋]": 60, "滿福堡[無蛋]": 45 } },
+                { id: "m_07", name: "火腿", options: { "白/全麥吐司[加蛋]": 45, "白/全麥吐司[無蛋]": 30, "漢堡[加蛋]": 45, "漢堡[無蛋]": 30, "滿福堡[加蛋]": 60, "滿福堡[無蛋]": 45 } },
+                { id: "m_08", name: "培根", options: { "白/全麥吐司[加蛋]": 45, "白/全麥吐司[無蛋]": 30, "漢堡[加蛋]": 45, "漢堡[無蛋]": 30, "滿福堡[加蛋]": 60, "滿福堡[無蛋]": 45 } },
+                { id: "m_09", name: "香椿野菇(全素)", options: { "白/全麥吐司[加蛋]": 50, "白/全麥吐司[無蛋]": 35, "漢堡[加蛋]": 50, "漢堡[無蛋]": 35, "滿福堡[加蛋]": 60, "滿福堡[無蛋]": 50 } },
+                { id: "m_10", name: "薯餅", options: { "白/全麥吐司[加蛋]": 50, "白/全麥吐司[無蛋]": 35, "漢堡[加蛋]": 50, "漢堡[無蛋]": 35, "滿福堡[加蛋]": 60, "滿福堡[無蛋]": 50 } },
+                { id: "m_11", name: "鮪魚沙拉", options: { "白/全麥吐司[加蛋]": 55, "白/全麥吐司[無蛋]": 40, "漢堡[加蛋]": 55, "漢堡[無蛋]": 40, "滿福堡[加蛋]": 65, "滿福堡[無蛋]": 50 } },
+                { id: "m_12", name: "香雞排", options: { "白/全麥吐司[加蛋]": 55, "白/全麥吐司[無蛋]": 40, "漢堡[加蛋]": 55, "漢堡[無蛋]": 40, "滿福堡[加蛋]": 65, "滿福堡[無蛋]": 50 } },
+                { id: "m_13", name: "花生薯餅(全素)", options: { "白/全麥吐司[加蛋]": 60, "白/全麥吐司[無蛋]": 45, "漢堡[加蛋]": 60, "漢堡[無蛋]": 45, "滿福堡[加蛋]": 70, "滿福堡[無蛋]": 55 } },
+                { id: "m_14", name: "熱狗", options: { "白/全麥吐司[加蛋]": 60, "白/全麥吐司[無蛋]": 45, "漢堡[加蛋]": 60, "漢堡[無蛋]": 45, "滿福堡[加蛋]": 70, "滿福堡[無蛋]": 55 } },
+                { id: "m_15", name: "黑胡椒豬排", options: { "白/全麥吐司[加蛋]": 65, "白/全麥吐司[無蛋]": 50, "漢堡[加蛋]": 65, "漢堡[無蛋]": 50, "滿福堡[加蛋]": 75, "滿福堡[無蛋]": 60 } },
+                { id: "m_16", name: "北海鱈魚", options: { "白/全麥吐司[加蛋]": 65, "白/全麥吐司[無蛋]": 50, "漢堡[加蛋]": 65, "漢堡[無蛋]": 50, "滿福堡[加蛋]": 75, "滿福堡[無蛋]": 60 } },
+                { id: "m_17", name: "香辣卡拉雞", options: { "白/全麥吐司[加蛋]": 65, "白/全麥吐司[無蛋]": 50, "漢堡[加蛋]": 65, "漢堡[無蛋]": 50, "滿福堡[加蛋]": 75, "滿福堡[無蛋]": 60 } },
+                { id: "m_18", name: "雙芥末花枝", options: { "白/全麥吐司[加蛋]": 70, "白/全麥吐司[無蛋]": 55, "漢堡[加蛋]": 70, "漢堡[無蛋]": 55, "滿福堡[加蛋]": 80, "滿福堡[無蛋]": 65 } },
+                { id: "m_19", name: "美式熱狗(全素)", options: { "白/全麥吐司[加蛋]": 70, "白/全麥吐司[無蛋]": 55, "漢堡[加蛋]": 70, "漢堡[無蛋]": 55, "滿福堡[加蛋]": 80, "滿福堡[無蛋]": 65 } },
+                { id: "m_20", name: "經典牛小排", options: { "白/全麥吐司[加蛋]": 75, "白/全麥吐司[無蛋]": 60, "漢堡[加蛋]": 75, "漢堡[無蛋]": 60, "滿福堡[加蛋]": 85, "滿福堡[無蛋]": 70 } },
+                { id: "m_21", name: "酸菜牛肉", options: { "白/全麥吐司[加蛋]": 75, "白/全麥吐司[無蛋]": 60, "漢堡[加蛋]": 75, "漢堡[無蛋]": 60, "滿福堡[加蛋]": 85, "滿福堡[無蛋]": 70 } },
+                { id: "m_22", name: "墨西哥辣雞(全素)", options: { "白/全麥吐司[加蛋]": 75, "白/全麥吐司[無蛋]": 60, "漢堡[加蛋]": 75, "漢堡[無蛋]": 60, "滿福堡[加蛋]": 85, "滿福堡[無蛋]": 70 } },
+                { id: "m_23", name: "超級總匯", options: { "白/全麥吐司[加蛋]": 75, "白/全麥吐司[無蛋]": 60, "漢堡[加蛋]": 75, "漢堡[無蛋]": 60, "滿福堡[加蛋]": 85, "滿福堡[無蛋]": 70 } },
+                { id: "m_24", name: "雙魚寶寶", options: { "白/全麥吐司[加蛋]": 80, "白/全麥吐司[無蛋]": 65, "漢堡[加蛋]": 80, "漢堡[無蛋]": 65, "滿福堡[加蛋]": 90, "滿福堡[無蛋]": 75 } },
+                { id: "m_25", name: "海陸雙拼", options: { "白/全麥吐司[加蛋]": 80, "白/全麥吐司[無蛋]": 65, "漢堡[加蛋]": 80, "漢堡[無蛋]": 65, "滿福堡[加蛋]": 90, "滿福堡[無蛋]": 75 } },
+                { id: "m_26", name: "泡菜卡拉", options: { "白/全麥吐司[加蛋]": 80, "白/全麥吐司[無蛋]": 65, "漢堡[加蛋]": 80, "漢堡[無蛋]": 65, "滿福堡[加蛋]": 90, "滿福堡[無蛋]": 75 } }
             ],
-            "漢堡 / 吐司系列": [
-                { id: "h1", name: "煎蛋", options: { "無蛋": 30, "加蛋": 40 } },
-                { id: "h2", name: "鮮蔬", options: { "無蛋": 40, "加蛋": 50 } },
-                { id: "h3", name: "羅勒起士蛋", options: { "加蛋": 40 } },
-                { id: "h4", name: "起士鮮蔬", options: { "無蛋": 45, "加蛋": 55 } },
-                { id: "h5", name: "香菇野菇(全素)", options: { "無蛋": 50, "加蛋": 60 } },
-                { id: "h6", name: "雞排", options: { "無蛋": 55, "加蛋": 65 } },
-                { id: "h7", name: "黑胡椒豬排", options: { "無蛋": 65, "加蛋": 75 } },
-                { id: "h8", name: "超級總匯", options: { "無蛋": 75, "加蛋": 85 } }
+            "蛋餅 / 抓餅系列": [
+                { id: "t_01", name: "原味", options: { "蛋餅": 25, "抓餅": 45 } },
+                { id: "t_02", name: "日式", options: { "蛋餅": 35, "抓餅": 55 } },
+                { id: "t_03", name: "九層塔", options: { "蛋餅": 35, "抓餅": 55 } },
+                { id: "t_04", name: "起士", options: { "蛋餅": 35, "抓餅": 55 } },
+                { id: "t_05", name: "素肉鬆", options: { "蛋餅": 35, "抓餅": 55 } },
+                { id: "t_06", name: "菜脯", options: { "蛋餅": 35, "抓餅": 55 } },
+                { id: "t_07", name: "菜脯九層塔", options: { "蛋餅": 35, "抓餅": 55 } },
+                { id: "t_08", name: "火腿", options: { "蛋餅": 35, "抓餅": 55 } },
+                { id: "t_09", name: "培根", options: { "蛋餅": 35, "抓餅": 55 } },
+                { id: "t_10", name: "玉米", options: { "蛋餅": 40, "抓餅": 60 } },
+                { id: "t_11", name: "鮮蔬", options: { "蛋餅": 40, "抓餅": 60 } },
+                { id: "t_12", name: "薯餅", options: { "蛋餅": 40, "抓餅": 60 } },
+                { id: "t_13", name: "熱狗", options: { "蛋餅": 45, "抓餅": 65 } },
+                { id: "t_14", name: "鮪魚沙拉", options: { "蛋餅": 45, "抓餅": 65 } },
+                { id: "t_15", name: "黑胡椒野菇", options: { "蛋餅": 45, "抓餅": 65 } },
+                { id: "t_16", name: "豬排", options: { "蛋餅": 45, "抓餅": 65 } },
+                { id: "t_17", name: "酸菜培根", options: { "蛋餅": 45, "抓餅": 65 } },
+                { id: "t_18", name: "卡拉雞", options: { "蛋餅": 50, "抓餅": 70 } },
+                { id: "t_19", name: "泡菜起士", options: { "蛋餅": 50, "抓餅": 70 } },
+                { id: "t_20", name: "超級總匯", options: { "蛋餅": 60, "抓餅": 80 } }
+            ],
+            "果醬吐司系列": [
+                { id: "j_01", name: "花生果醬吐司", options: { "薄片": 20, "厚片": 25 } },
+                { id: "j_02", name: "巧克力果醬吐司", options: { "薄片": 20, "厚片": 25 } },
+                { id: "j_03", name: "草莓果醬吐司", options: { "薄片": 20, "厚片": 25 } },
+                { id: "j_04", name: "椰香果醬吐司", options: { "薄片": 20, "厚片": 25 } },
+                { id: "j_05", name: "抹茶果醬吐司", options: { "薄片": 20, "厚片": 25 } }
+            ],
+            "美味小吃單點": [
+                { id: "s_01", name: "薯餅(1片)", price: 20 },
+                { id: "s_02", name: "粗脆薯條", price: 40 },
+                { id: "s_03", name: "鹹酥雞(奶素)", price: 40 },
+                { id: "s_04", name: "辣雞米花", price: 40 },
+                { id: "s_05", name: "綜合蔬菜炒蛋", price: 35 },
+                { id: "s_06", name: "花枝圈", price: 40 },
+                { id: "s_07", name: "薯條", price: 30 },
+                { id: "s_08", name: "熱狗", price: 30 },
+                { id: "s_09", name: "麥克雞塊", price: 25 },
+                { id: "s_10", name: "荷包蛋 (全熟/半熟)", price: 15 },
+                { id: "s_11", name: "玉米煎蛋 / 九層塔煎蛋", price: 30 },
+                { id: "s_12", name: "薯餅蛋塔", price: 65 },
+                { id: "s_13", name: "玉米薯餅蛋塔", price: 75 },
+                { id: "s_14", name: "法式吐司 (原味/起士)", price: 40 },
+                { id: "s_15", name: "蘿蔔糕", price: 30 },
+                { id: "s_16", name: "蘿蔔糕炒蛋", price: 45 },
+                { id: "s_17", name: "蘿蔔糕炒菜脯九層塔蛋", price: 55 },
+                { id: "s_18", name: "蘿蔔糕炒蔬菜蛋", price: 55 },
+                { id: "s_19", name: "時令蔬菜湯麵", price: 70 }
             ],
             "美味麵食": [
-                { id: "m1", name: "黑胡椒麵", price: 40, setPrice: 80 },
-                { id: "m2", name: "奶油白醬麵", price: 40, setPrice: 80 },
-                { id: "m3", name: "香菇肉燥麵", price: 45, setPrice: 85 },
-                { id: "m4", name: "鐵板拌麵", price: 45, setPrice: 85 }
+                { id: "n_01", name: "黑胡椒麵", options: { "單點": 40, "加蛋": 55, "加菜": 55, "升級套餐": 80 } },
+                { id: "n_02", name: "奶油白醬麵", options: { "單點": 40, "加蛋": 55, "加菜": 55, "升級套餐": 80 } },
+                { id: "n_03", name: "香菇肉燥麵", options: { "單點": 45, "加蛋": 60, "加菜": 60, "升級套餐": 85 } },
+                { id: "n_04", name: "香椿拌麵", options: { "單點": 45, "加蛋": 60, "加菜": 60, "升級套餐": 85 } },
+                { id: "n_05", name: "饕辣豆瓣麵", options: { "單點": 45, "加蛋": 60, "加菜": 60, "升級套餐": 85 } },
+                { id: "n_06", name: "茄汁酸菜麵", options: { "單點": 50, "加蛋": 65, "加菜": 65, "升級套餐": 90 } },
+                { id: "n_07", name: "鐵板拌麵", options: { "單點": 55, "加蛋": 70, "加菜": 70, "升級套餐": 95 } },
+                { id: "n_08", name: "泡菜炒麵", options: { "單點": 80, "加蛋": 95, "加菜": 95, "升級套餐": 120 } }
             ],
-            "飲品 (500cc/700cc)": [
-                { id: "d1", name: "紅茶 (冰/溫/熱)", price: 15 },
-                { id: "d2", name: "奶茶 (冰/溫/熱)", price: 15 },
-                { id: "d3", name: "鮮奶茶 (冰/溫/熱)", price: 25 },
-                { id: "d4", name: "豆漿 (半糖/無糖)", price: 15 },
-                { id: "d5", name: "豆漿紅茶", price: 20 },
-                { id: "d6", name: "鴛鴦奶茶", price: 20 },
-                { id: "d7", name: "豆乳咖啡", price: 30 }
-            ]
-        };
-
-        let cart = [];
-
-        function renderMenu() {
-            const renderer = document.getElementById('menu-renderer');
-            renderer.innerHTML = '';
-            for (let category in menuData) {
-                let catHtml = `<h3 class="category-title">${category}</h3><div class="menu-grid">`;
-                menuData[category].forEach(item => {
-                    catHtml += `<div class="menu-item"><div><div class="item-name">${item.name}</div>`;
-                    if (item.options) {
-                        catHtml += `<div class="option-group" id="opts-${item.id}">`;
-                        Object.keys(item.options).forEach((opt, idx) => {
-                            catHtml += `<button class="opt-btn ${idx===0?'selected':''}" onclick="selectOpt('${item.id}', '${opt}', ${item.options[opt]})">${opt} (+$${item.options[opt]})</button>`;
-                        });
-                        catHtml += `</div>`;
-                    }
-                    if (item.setPrice) {
-                        catHtml += `<div class="option-group" id="opts-${item.id}">
-                            <button class="opt-btn selected" onclick="selectOpt('${item.id}', '單點', ${item.price})">單點 ($${item.price})</button>
-                            <button class="opt-btn" onclick="selectOpt('${item.id}', '升級套餐', ${item.setPrice})">套餐 ($${item.setPrice})</button>
-                        </div>`;
-                    }
-                    let initialPrice = item.price || (item.options ? Object.values(item.options)[0] : 0);
-                    catHtml += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initialPrice}</span>
-                            <button class="add-btn" onclick="addToCart('${item.id}', '${item.name}')">加入購物車</button></div></div>`;
-                });
-                catHtml += `</div>`;
-                renderer.innerHTML += catHtml;
-            }
-        }
-
-        function selectOpt(itemId, optName, price) {
-            const btnGroup = document.getElementById(`opts-${itemId}`);
-            btnGroup.querySelectorAll('.opt-btn').forEach(b => {
-                if(b.innerText.includes(optName)) b.classList.add('selected');
-                else b.classList.remove('selected');
-            });
-            document.getElementById(`price-${itemId}`).innerText = `$${price}`;
-        }
-
-        function addToCart(itemId, itemName) {
-            const btnGroup = document.getElementById(`opts-${itemId}`);
-            let finalName = itemName;
-            let finalPrice = 0;
-            if (btnGroup) {
-                const selected = btnGroup.querySelector('.opt-btn.selected');
-                let optText = selected.innerText.split(' ')[0];
-                finalName += ` [${optText}]`;
-                finalPrice = parseInt(document.getElementById(`price-${itemId}`).innerText.replace('$', ''));
-            } else {
-                for(let cat in menuData){
-                    let match = menuData[cat].find(i => i.id === itemId);
-                    if(match) finalPrice = match.price;
-                }
-            }
-            const existing = cart.find(c => c.fullName === finalName);
-            if (existing) { existing.qty++; } else { cart.push({ fullName: finalName, price: finalPrice, qty: 1 }); }
-            renderCart();
-        }
-
-        function renderCart() {
-            const list = document.getElementById('cart-items-list');
-            const totalSpan = document.getElementById('cart-total-price');
-            if(cart.length === 0) {
-                list.innerHTML = `<p style="color: #999; text-align: center;">購物車目前空空如也</p>`;
-                totalSpan.innerText = '0';
-                return;
-            }
-            let cartHtml = '';
-            let total = 0;
-            cart.forEach((item, index) => {
-                total += (item.price * item.qty);
-                cartHtml += `<div class="cart-item"><span>${item.fullName} x ${item.qty}</span>
-                    <span>$${item.price * item.qty} <button style="color:red; border:none; background:none; cursor:pointer; margin-left:5px;" onclick="removeFromCart(${index})">❌</button></span></div>`;
-            });
-            list.innerHTML = cartHtml;
-            totalSpan.innerText = total;
-        }
-
-        function removeFromCart(index) { cart.splice(index, 1); renderCart(); }
-
-        // 送出訂單
-        function submitOrder() {
-            if(cart.length === 0) { alert('您的購物車是空的！'); return; }
-            
-            // 讀取聯絡欄位
-            const phone = document.getElementById('user-phone').value.trim();
-            const lineId = document.getElementById('user-line').value.trim() || '未填寫';
-            
-            if(!phone) { alert('為了點餐通知，請務必填寫聯絡電話！'); return; }
-
-            const oDate = document.getElementById('order-date').value;
-            const dtype = document.getElementById('dining-type').value;
-            const tnum = document.getElementById('table-num').value || '未填寫';
-            const note = document.getElementById('order-note').value || '無';
-            const total = parseInt(document.getElementById('cart-total-price').innerText);
-            
-            let localOrders = JSON.parse(localStorage.getItem('jlh_orders')) || [];
-            let currentId = parseInt(localStorage.getItem('jlh_order_id_counter')) || 1001;
-
-            const newOrder = {
-                id: currentId,
-                date: oDate,
-                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                type: `${dtype} - ${tnum}`,
-                phone: phone,   // 新增：電話資料
-                line: lineId,   // 新增：LINE 資料
-                items: [...cart],
-                note: note,
-                total: total,
-                status: '新訂單'
-            };
-
-            localOrders.push(newOrder);
-            localStorage.setItem('jlh_orders', JSON.stringify(localOrders));
-            localStorage.setItem('jlh_order_id_counter', currentId + 1);
-            
-            alert(`訂單 #${currentId} 已成功送出！`);
-            cart = [];
-            document.getElementById('user-phone').value = '';
-            document.getElementById('user-line').value = '';
-            document.getElementById('order-note').value = '';
-            renderCart();
-        }
-
-        window.onload = function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('order-date').value = today;
-            renderMenu();
-        };
-    </script>
-</body>
-</html>
+            "冷熱飲品 /
