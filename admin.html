@@ -3,122 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>珍愛家早午餐 - 後台管理面板</title>
+    <title>珍愛家素食早午餐 - 後台接單系統</title>
     <style>
-        :root { --primary-color: #2c3e50; --secondary-color: #2ecc71; --bg-color: #ecf0f1; }
+        :root { --primary-color: #2c3e50; --accent-color: #e67e22; --success-color: #27ae60; --bg-color: #ecf0f1; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
-        body { background-color: var(--bg-color); padding: 20px; }
-        .dashboard { max-width: 1200px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
-        .refresh-btn { background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .clear-btn { background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 10px; }
-        .order-table { width: 100%; border-collapse: collapse; }
-        .order-table th, .order-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; vertical-align: top; }
-        .order-table th { background-color: var(--primary-color); color: white; }
+        body { background-color: var(--bg-color); padding: 20px; color: #333; }
+        header { background: var(--primary-color); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .dashboard { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h2 { margin-bottom: 15px; font-size: 18px; border-left: 4px solid var(--accent-color); padding-left: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; color: #555; font-weight: bold; }
+        tr:hover { background-color: #fdfaf7; }
+        
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .status-pending { background: #f1c40f; color: #fff; }
-        .status-completed { background: #2ecc71; color: #fff; }
-        .action-btn { background: var(--primary-color); color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .note-box { margin-top: 5px; padding: 4px 8px; background: #fff2cc; border-left: 3px solid #f1c40f; font-size: 13px; color: #7f8c8d; }
-        .contact-info { font-size: 12px; color: #2980b9; margin-top: 4px; background: #e8f4f8; padding: 4px; border-radius: 4px; display: inline-block; }
+        .status-new { background-color: #ffeaa7; color: #d63031; }
+        .status-done { background-color: #dff9fb; color: #27ae60; }
+        
+        .action-btn { background-color: var(--success-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
+        .action-btn:hover { background-color: #219653; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .clear-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; float: right; font-size: 13px; }
+        
+        .item-list-text { font-size: 14px; line-height: 1.5; color: #2c3e50; }
+        .note-text { color: #7f8c8d; font-size: 13px; font-style: italic; max-width: 200px; word-break: break-all; }
     </style>
 </head>
 <body>
 
-    <div class="dashboard">
-        <div class="header-bar">
-            <h2>📥 珍愛家素食早午餐 - 即時訂單管理</h2>
-            <div>
-                <button class="refresh-btn" onclick="loadOrders()">🔄 重新整理訂單</button>
-                <button class="clear-btn" onclick="clearAllOrders()">⚠️ 清空歷史紀錄</button>
-            </div>
+    <header>
+        <div>
+            <h1 style="font-size: 22px;">🍳 珍愛家早午餐 - 即時接單後台</h1>
+            <p style="font-size: 12px; opacity: 0.8; margin-top: 3px;">本系統與客戶前台同步，請維持網頁開啟以接收新訂單</p>
         </div>
-        
-        <table class="order-table">
-            <thead>
-                <tr>
-                    <th>訂單編號</th>
-                    <th>取餐日期 / 時間</th>
-                    <th>顧客資訊 (桌號/聯絡方式)</th>
-                    <th>點餐明細與備註</th>
-                    <th>總金額</th>
-                    <th>狀態</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody id="admin-orders-tbody">
-                <tr>
-                    <td colspan="7" style="text-align: center; color: #999;">目前沒有新訂單</td>
-                </tr>
-            </tbody>
-        </table>
+        <button class="clear-btn" onclick="clearAllOrders()">🧹 清空歷史訂單紀錄</button>
+    </header>
+
+    <div class="dashboard">
+        <div class="card">
+            <h2>📥 當日點餐訂單列表 (最新訂單排在最上方)</h2>
+            <table id="orders-table">
+                <thead>
+                    <tr>
+                        <th>單號</th>
+                        <th>取餐時間/方式</th>
+                        <th>聯絡電話 / LINE</th>
+                        <th>點餐品項明細 (數量)</th>
+                        <th>備註</th>
+                        <th>總金額</th>
+                        <th>目前狀態</th>
+                        <th>出餐操作</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-tbody">
+                    </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
+        // 載入並渲染本地儲存的訂單
         function loadOrders() {
-            const tbody = document.getElementById('admin-orders-tbody');
-            let orders = JSON.parse(localStorage.getItem('jlh_orders')) || [];
-
-            if(orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #999;">目前沒有任何訂單</td></tr>`;
+            const tbody = document.getElementById('orders-tbody');
+            // 從瀏覽器的資料庫中抓取前台送過來的訂單
+            let localOrders = JSON.parse(localStorage.getItem('jlh_orders')) || [];
+            
+            if(localOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#95a5a6; padding: 40px 0;">📭 目前還沒有新訂單進來喔！</td></tr>`;
                 return;
             }
 
-            orders.reverse();
+            // 讓最新進來的訂單排序在最上面，方便煎台看
+            localOrders.sort((a, b) => b.id - a.id);
 
-            let tbodyHtml = '';
-            orders.forEach(o => {
-                let itemsDesc = o.items.map(i => `${i.fullName} x ${i.qty}`).join('<br>');
-                let badgeClass = o.status === '新訂單' ? 'status-pending' : 'status-completed';
-                let actionBtn = o.status === '新訂單' ? `<button class="action-btn" onclick="completeOrder(${o.id})">出餐完成</button>` : '已結案';
+            let html = '';
+            localOrders.forEach(order => {
+                // 組裝餐點明細文字排版
+                let itemsText = order.items.map(i => `• ${i.fullName} <b style="color:#e67e22;">x${i.qty}</b>`).join('<br>');
                 
-                let noteHtml = o.note && o.note !== '無' ? `<div class="note-box">📝 備註：${o.note}</div>` : '';
-                let displayDate = o.date ? o.date : '未指定日期';
+                // 判斷狀態決定標籤顏色
+                let isDone = (order.status === '出餐完成' || order.status === '已完成');
+                let badgeClass = isDone ? 'status-badge status-done' : 'status-badge status-new';
+                let statusText = isDone ? '已完成' : '新訂單(未出餐)';
+                
+                // 如果已經完成了，就把按鈕隱藏，避免重複點擊
+                let actionButtonHtml = isDone 
+                    ? `<span style="color:#95a5a6; font-size:13px;">✓ 已送出</span>` 
+                    : `<button class="action-btn" onclick="completeOrder(${order.id})">✔ 確認出餐</button>`;
 
-                // 處理新增的電話與 LINE 顯示格式
-                let customerPhone = o.phone ? o.phone : '未填寫';
-                let customerLine = o.line ? o.line : '未填寫';
-
-                tbodyHtml += `<tr>
-                    <td>#${o.id}</td>
-                    <td><strong>${displayDate}</strong><br><span style="color:#7f8c8d; font-size:12px;">${o.time}</span></td>
-                    <td>
-                        <strong>${o.type}</strong><br>
-                        <div class="contact-info">
-                            📞 電話: ${customerPhone}<br>
-                            💬 LINE: ${customerLine}
-                        </div>
-                    </td>
-                    <td style="font-size:14px;">
-                        <div>${itemsDesc}</div>
-                        ${noteHtml}
-                    </td>
-                    <td style="color:red; font-weight:bold;">$${o.total}</td>
-                    <td><span class="status-badge ${badgeClass}">${o.status}</span></td>
-                    <td>${actionBtn}</td>
+                html += `<tr>
+                    <td><b>#${order.id}</b><br><span style="font-size:11px; color:#95a5a6;">${order.time}</span></td>
+                    <td><span style="color:#2980b9; font-weight:bold;">${order.type}</span><br><span style="font-size:12px;">日期: ${order.date}</span></td>
+                    <td>📱 ${order.phone}<br><span style="font-size:12px; color:#7f8c8d;">LINE: ${order.line}</span></td>
+                    <td class="item-list-text">${itemsText}</td>
+                    <td class="note-text">${order.note}</td>
+                    <td style="font-weight:bold; color:#d63031; font-size:16px;">$${order.total}</td>
+                    <td><span class="${badgeClass}">${statusText}</span></td>
+                    <td>${actionButtonHtml}</td>
                 </tr>`;
             });
-            tbody.innerHTML = tbodyHtml;
+            
+            tbody.innerHTML = html;
         }
 
+        // 當點擊「確認出餐」按鈕時，才手動修改狀態
         function completeOrder(orderId) {
-            let orders = JSON.parse(localStorage.getItem('jlh_orders')) || [];
-            let target = orders.find(o => o.id === orderId);
-            if(target) {
-                target.status = '已完成';
-                localStorage.setItem('jlh_orders', JSON.stringify(orders));
+            let localOrders = JSON.parse(localStorage.getItem('jlh_orders')) || [];
+            let orderIndex = localOrders.findIndex(o => o.id === orderId);
+            
+            if(orderIndex !== -1) {
+                // 手動變更狀態為已完成
+                localOrders[orderIndex].status = '出餐完成';
+                localStorage.setItem('jlh_orders', JSON.stringify(localOrders));
+                
+                // 播放一個簡單的提示音或通知，接著重新刷面板
                 loadOrders();
             }
         }
 
+        // 清空歷史紀錄功能
         function clearAllOrders() {
-            if(confirm('確定要清空所有訂單紀錄嗎？')) {
+            if(confirm('⚠️ 您確定要清空後台所有的訂單紀錄嗎？\n(清空後資料無法恢復，建議收攤後再點選)')) {
                 localStorage.removeItem('jlh_orders');
-                localStorage.removeItem('jlh_order_id_counter');
                 loadOrders();
             }
         }
 
+        // 每隔 5 秒鐘自動重新整理一次列表，這樣有新點單時手機不用動手按重整
         window.onload = function() {
             loadOrders();
             setInterval(loadOrders, 5000); 
