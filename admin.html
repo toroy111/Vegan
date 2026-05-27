@@ -28,4 +28,162 @@
         .clear-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
         .audio-btn { background-color: #34495e; color: #cbd5e0; border: 1px solid #455a64; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 10px; }
         
-        .item-list-text { font-size: 14px; line-height: 1.5; color: #2c3e50;
+        .item-list-text { font-size: 14px; line-height: 1.5; color: #2c3e50; }
+        .note-text { color: #7f8c8d; font-size: 13px; font-style: italic; max-width: 200px; word-break: break-all; }
+        
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1 style="font-size: 22px;">🍳 珍愛家早午餐 - 即時接單後台 🔔</h1>
+            <p style="font-size: 12px; opacity: 0.8; margin-top: 3px;">系統已啟動音效監聽 (每 5 秒自動刷單)</p>
+        </div>
+        <div>
+            <button class="audio-btn" onclick="playDingDong()">🔊 測試音效</button>
+            <button class="clear-btn" onclick="clearAllOrders()">🧹 清空歷史訂單紀錄</button>
+        </div>
+    </header>
+
+    <div class="dashboard">
+        <div class="card">
+            <h2>📥 當日點餐訂單列表 (最新訂單排在最上方)</h2>
+            <table id="orders-table">
+                <thead>
+                    <tr>
+                        <th>單號</th>
+                        <th>取餐時間/方式</th>
+                        <th>聯絡電話 / LINE</th>
+                        <th>點餐品項明細 (數量)</th>
+                        <th>備註</th>
+                        <th>總金額</th>
+                        <th>目前狀態</th>
+                        <th>出餐操作</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-tbody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 用來紀錄上一次看到的最高單號，預設先抓現存最大單號
+        let lastMaxOrderId = 0;
+        let isFirstLoad = true;
+
+        // 電子音效合成器：模擬發出「叮咚」兩聲鈴聲
+        function playDingDong() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                
+                // 第一聲：高音
+                let osc1 = ctx.createOscillator();
+                let gain1 = ctx.createGain();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(880, ctx.currentTime); // A5高音
+                gain1.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                osc1.connect(gain1);
+                gain1.connect(ctx.destination);
+                osc1.start();
+                osc1.stop(ctx.currentTime + 0.4);
+
+                // 第二聲：稍低音 (延遲0.15秒發出)
+                let osc2 = ctx.createOscillator();
+                let gain2 = ctx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(698, ctx.currentTime + 0.15); // F5音
+                gain2.gain.setValueAtTime(0.3, ctx.currentTime + 0.15);
+                gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+                osc2.connect(gain2);
+                gain2.connect(ctx.destination);
+                osc2.start(ctx.currentTime + 0.15);
+                osc2.stop(ctx.currentTime + 0.6);
+            } catch (e) {
+                console.log("音效撥放失敗，需使用者與網頁有互動點擊始可解除鎖定: ", e);
+            }
+        }
+
+        // 載入並檢查訂單
+        function loadOrders() {
+            const tbody = document.getElementById('orders-tbody');
+            let localOrders = JSON.parse(localStorage.getItem('jlh_orders')) || [];
+            
+            if(localOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#95a5a6; padding: 40px 0;">📭 目前還沒有新訂單進來喔！</td></tr>`;
+                lastMaxOrderId = 0;
+                isFirstLoad = false;
+                return;
+            }
+
+            // 抓出目前資料庫中的最大單號
+            let currentMaxId = Math.max(...localOrders.map(o => o.id));
+
+            // 【核心音效判斷】：如果目前的最高單號，比上一次紀錄的還要大，且不是第一次開網頁，就發出警報！
+            if (!isFirstLoad && currentMaxId > lastMaxOrderId) {
+                playDingDong();
+            }
+
+            // 更新最高單號紀錄
+            lastMaxOrderId = currentMaxId;
+            isFirstLoad = false;
+
+            // 排序：新訂單排在最上面
+            localOrders.sort((a, b) => b.id - a.id);
+
+            let html = '';
+            localOrders.forEach(order => {
+                let itemsText = order.items.map(i => `• ${i.fullName} <b style="color:#e67e22;">x${i.qty}</b>`).join('<br>');
+                let isDone = (order.status === '出餐完成' || order.status === '已完成');
+                let badgeClass = isDone ? 'status-badge status-done' : 'status-badge status-new';
+                let statusText = isDone ? '已完成' : '新訂單(未出餐)';
+                
+                let actionButtonHtml = isDone 
+                    ? `<span style="color:#95a5a6; font-size:13px;">✓ 已送出</span>` 
+                    : `<button class="action-btn" onclick="completeOrder(${order.id})">✔ 確認出餐</button>`;
+
+                html += `<tr>
+                    <td><b>#${order.id}</b><br><span style="font-size:11px; color:#95a5a6;">${order.time}</span></td>
+                    <td><span style="color:#2980b9; font-weight:bold;">${order.type}</span><br><span style="font-size:12px;">日期: ${order.date}</span></td>
+                    <td>📱 ${order.phone}<br><span style="font-size:12px; color:#7f8c8d;">LINE: ${order.line}</span></td>
+                    <td class="item-list-text">${itemsText}</td>
+                    <td class="note-text">${order.note}</td>
+                    <td style="font-weight:bold; color:#d63031; font-size:16px;">$${order.total}</td>
+                    <td><span class="${badgeClass}">${statusText}</span></td>
+                    <td>${actionButtonHtml}</td>
+                </tr>`;
+            });
+            
+            tbody.innerHTML = html;
+        }
+
+        function completeOrder(orderId) {
+            let localOrders = JSON.parse(localStorage.getItem('jlh_orders')) || [];
+            let orderIndex = localOrders.findIndex(o => o.id === orderId);
+            if(orderIndex !== -1) {
+                localOrders[orderIndex].status = '出餐完成';
+                localStorage.setItem('jlh_orders', JSON.stringify(localOrders));
+                loadOrders();
+            }
+        }
+
+        function clearAllOrders() {
+            if(confirm('⚠️ 您確定要清空後台所有的訂單紀錄嗎？\n(建議收攤後再點選)')) {
+                localStorage.removeItem('jlh_orders');
+                loadOrders();
+            }
+        }
+
+        window.onload = function() {
+            loadOrders();
+            // 每 5 秒自動刷單，並盤查是否有新單號湧入
+            setInterval(loadOrders, 5000); 
+        };
+    </script>
+</body>
+</html>
