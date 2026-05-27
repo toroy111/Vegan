@@ -8,7 +8,7 @@
         :root { --primary-color: #2c3e50; --accent-color: #e67e22; --success-color: #27ae60; --bg-color: #ecf0f1; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
         body { background-color: var(--bg-color); padding: 20px; color: #333; }
-        header { background: var(--primary-color); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        header { background: var(--primary-color); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 20px; }
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
@@ -20,122 +20,12 @@
         tr:hover { background-color: #fdfaf7; }
         
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .status-new { background-color: #ffeaa7; color: #d63031; }
+        .status-new { background-color: #ffeaa7; color: #d63031; animation: blink 1.5s infinite; }
         .status-done { background-color: #dff9fb; color: #27ae60; }
         
         .action-btn { background-color: var(--success-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
         .action-btn:hover { background-color: #219653; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .clear-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; float: right; font-size: 13px; }
+        .clear-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .audio-btn { background-color: #34495e; color: #cbd5e0; border: 1px solid #455a64; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 10px; }
         
-        .item-list-text { font-size: 14px; line-height: 1.5; color: #2c3e50; }
-        .note-text { color: #7f8c8d; font-size: 13px; font-style: italic; max-width: 200px; word-break: break-all; }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div>
-            <h1 style="font-size: 22px;">🍳 珍愛家早午餐 - 即時接單後台</h1>
-            <p style="font-size: 12px; opacity: 0.8; margin-top: 3px;">本系統與客戶前台同步，請維持網頁開啟以接收新訂單</p>
-        </div>
-        <button class="clear-btn" onclick="clearAllOrders()">🧹 清空歷史訂單紀錄</button>
-    </header>
-
-    <div class="dashboard">
-        <div class="card">
-            <h2>📥 當日點餐訂單列表 (最新訂單排在最上方)</h2>
-            <table id="orders-table">
-                <thead>
-                    <tr>
-                        <th>單號</th>
-                        <th>取餐時間/方式</th>
-                        <th>聯絡電話 / LINE</th>
-                        <th>點餐品項明細 (數量)</th>
-                        <th>備註</th>
-                        <th>總金額</th>
-                        <th>目前狀態</th>
-                        <th>出餐操作</th>
-                    </tr>
-                </thead>
-                <tbody id="orders-tbody">
-                    </tbody>
-            </table>
-        </div>
-    </div>
-
-    <script>
-        // 載入並渲染本地儲存的訂單
-        function loadOrders() {
-            const tbody = document.getElementById('orders-tbody');
-            // 從瀏覽器的資料庫中抓取前台送過來的訂單
-            let localOrders = JSON.parse(localStorage.getItem('jlh_orders')) || [];
-            
-            if(localOrders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#95a5a6; padding: 40px 0;">📭 目前還沒有新訂單進來喔！</td></tr>`;
-                return;
-            }
-
-            // 讓最新進來的訂單排序在最上面，方便煎台看
-            localOrders.sort((a, b) => b.id - a.id);
-
-            let html = '';
-            localOrders.forEach(order => {
-                // 組裝餐點明細文字排版
-                let itemsText = order.items.map(i => `• ${i.fullName} <b style="color:#e67e22;">x${i.qty}</b>`).join('<br>');
-                
-                // 判斷狀態決定標籤顏色
-                let isDone = (order.status === '出餐完成' || order.status === '已完成');
-                let badgeClass = isDone ? 'status-badge status-done' : 'status-badge status-new';
-                let statusText = isDone ? '已完成' : '新訂單(未出餐)';
-                
-                // 如果已經完成了，就把按鈕隱藏，避免重複點擊
-                let actionButtonHtml = isDone 
-                    ? `<span style="color:#95a5a6; font-size:13px;">✓ 已送出</span>` 
-                    : `<button class="action-btn" onclick="completeOrder(${order.id})">✔ 確認出餐</button>`;
-
-                html += `<tr>
-                    <td><b>#${order.id}</b><br><span style="font-size:11px; color:#95a5a6;">${order.time}</span></td>
-                    <td><span style="color:#2980b9; font-weight:bold;">${order.type}</span><br><span style="font-size:12px;">日期: ${order.date}</span></td>
-                    <td>📱 ${order.phone}<br><span style="font-size:12px; color:#7f8c8d;">LINE: ${order.line}</span></td>
-                    <td class="item-list-text">${itemsText}</td>
-                    <td class="note-text">${order.note}</td>
-                    <td style="font-weight:bold; color:#d63031; font-size:16px;">$${order.total}</td>
-                    <td><span class="${badgeClass}">${statusText}</span></td>
-                    <td>${actionButtonHtml}</td>
-                </tr>`;
-            });
-            
-            tbody.innerHTML = html;
-        }
-
-        // 當點擊「確認出餐」按鈕時，才手動修改狀態
-        function completeOrder(orderId) {
-            let localOrders = JSON.parse(localStorage.getItem('jlh_orders')) || [];
-            let orderIndex = localOrders.findIndex(o => o.id === orderId);
-            
-            if(orderIndex !== -1) {
-                // 手動變更狀態為已完成
-                localOrders[orderIndex].status = '出餐完成';
-                localStorage.setItem('jlh_orders', JSON.stringify(localOrders));
-                
-                // 播放一個簡單的提示音或通知，接著重新刷面板
-                loadOrders();
-            }
-        }
-
-        // 清空歷史紀錄功能
-        function clearAllOrders() {
-            if(confirm('⚠️ 您確定要清空後台所有的訂單紀錄嗎？\n(清空後資料無法恢復，建議收攤後再點選)')) {
-                localStorage.removeItem('jlh_orders');
-                loadOrders();
-            }
-        }
-
-        // 每隔 5 秒鐘自動重新整理一次列表，這樣有新點單時手機不用動手按重整
-        window.onload = function() {
-            loadOrders();
-            setInterval(loadOrders, 5000); 
-        };
-    </script>
-</body>
-</html>
+        .item-list-text { font-size: 14px; line-height: 1.5; color: #2c3e50;
