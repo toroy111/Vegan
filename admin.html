@@ -3,171 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>店家廚房接單後台</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome 圖示 -->
+    <title>珍愛家廚房接單後台</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-    <!-- 頂部列 -->
-    <header class="bg-slate-800 text-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="text-xl font-black tracking-wider"><i class="fa-solid fa-clipboard-list text-orange-400 mr-2"></i>KITCHEN CONTROL CENTRE</h1>
+    <header class="bg-gray-800 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-black tracking-wider"><i class="fa-solid fa-leaf text-green-400 mr-2"></i>珍愛家雲端接單中心</h1>
         <div class="flex items-center gap-4">
-            <span class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded animate-pulse">雲端即時連線中</span>
-            <button onclick="fetchOrders()" class="text-sm bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-rotate mr-1"></i>重整</button>
+            <span class="text-xs bg-green-500 bg-opacity-20 text-green-400 border border-green-500 border-opacity-30 px-2 py-1 rounded">雲端同步中 (5秒)</span>
+            <button onclick="fetchOrders()" class="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-rotate mr-1"></i>手動重整</button>
         </div>
     </header>
 
-    <!-- 三欄式大面板 -->
     <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
-        
-        <!-- 1. 新進訂單 -->
-        <div class="bg-slate-200/60 p-4 rounded-2xl border border-slate-300/40">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-300 pb-2">
-                <h3 class="font-extrabold text-slate-700 text-lg flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-orange-500 animate-ping"></span>新進訂單
-                </h3>
-                <span id="count-new" class="bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-xs font-bold">0</span>
+        <div class="bg-gray-200 p-4 rounded-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-300 pb-2">
+                <h3 class="font-extrabold text-gray-700 text-lg">🔔 新進訂單</h3>
+                <span id="count-new" class="bg-red-500 text-white px-2.5 py-0.5 rounded-full text-xs font-bold">0</span>
             </div>
-            <div id="list-new" class="space-y-4 max-h-[75vh] overflow-y-auto pr-1"></div>
+            <div id="list-new" class="space-y-4 max-h-screen overflow-y-auto"></div>
         </div>
 
-        <!-- 2. 製作中 -->
-        <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+        <div class="bg-blue-50 p-4 rounded-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-blue-200 pb-2">
-                <h3 class="font-extrabold text-blue-700 text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-fire-burner text-blue-500"></i>製作中
-                </h3>
+                <h3 class="font-extrabold text-blue-700 text-lg">🍳 製作中</h3>
                 <span id="count-progress" class="bg-blue-500 text-white px-2.5 py-0.5 rounded-full text-xs font-bold">0</span>
             </div>
-            <div id="list-progress" class="space-y-4 max-h-[75vh] overflow-y-auto pr-1"></div>
+            <div id="list-progress" class="space-y-4 max-h-screen overflow-y-auto"></div>
         </div>
 
-        <!-- 3. 已完成 (僅顯示當日前幾筆) -->
-        <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
-            <div class="flex justify-between items-center mb-4 border-b border-emerald-200 pb-2">
-                <h3 class="font-extrabold text-emerald-700 text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-circle-check text-emerald-500"></i>今日已完成
-                </h3>
-                <span id="count-done" class="bg-emerald-500 text-white px-2.5 py-0.5 rounded-full text-xs font-bold">0</span>
+        <div class="bg-green-50 p-4 rounded-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-green-200 pb-2">
+                <h3 class="font-extrabold text-green-700 text-lg">✅ 今日已完成</h3>
+                <span id="count-done" class="bg-green-500 text-white px-2.5 py-0.5 rounded-full text-xs font-bold">0</span>
             </div>
-            <div id="list-done" class="space-y-4 max-h-[75vh] overflow-y-auto pr-1"></div>
+            <div id="list-done" class="space-y-4 max-h-screen overflow-y-auto"></div>
         </div>
-
     </div>
 
-    <!-- 提示音效 -->
     <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/951/951-200.wav" preload="auto"></audio>
 
     <script>
-        // ⚠️ 請換成你從 Google 部署得到的網址 ⚠️
+        // ⚠️ 請在這裡換成你從 Google 部署得到的網址 ⚠️
         const API_URL = "你的Google網址";
         
         let previousOrderCount = -1;
 
-        // 從 Google Sheets 抓取最新訂單資料
         function fetchOrders() {
+            if(API_URL === "你的Google網址") return;
             fetch(API_URL)
                 .then(res => res.json())
-                .then(orders => {
-                    renderDashboard(orders);
-                })
-                .catch(err => console.error("抓取雲端資料失敗:", err));
+                .then(orders => renderDashboard(orders))
+                .catch(err => console.error("雲端連線失敗:", err));
         }
 
-        // 渲染大面板
         function renderDashboard(orders) {
             const listNew = document.getElementById('list-new');
             const listProgress = document.getElementById('list-progress');
             const listDone = document.getElementById('list-done');
 
-            listNew.innerHTML = '';
-            listProgress.innerHTML = '';
-            listDone.innerHTML = '';
-
+            listNew.innerHTML = ''; listProgress.innerHTML = ''; listDone.innerHTML = '';
             let cNew = 0, cProgress = 0, cDone = 0;
 
             orders.forEach(order => {
                 let itemsHtml = '';
                 order.items.forEach(item => {
-                    itemsHtml += `<div class="flex justify-between text-sm py-0.5 text-slate-700 font-medium"><span>${item.name}</span><span>× ${item.qty}</span></div>`;
+                    itemsHtml += `<div class="flex justify-between text-sm py-0.5 text-gray-700 font-bold"><span>${item.name}</span><span>× ${item.qty}</span></div>`;
                 });
 
                 const cardHtml = `
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                         <div class="flex justify-between items-start border-b pb-2 mb-2">
                             <div>
-                                <span class="text-xs bg-slate-100 px-2 py-0.5 rounded text-slate-600 font-mono">${order.id}</span>
-                                <div class="text-lg font-black text-slate-800 mt-1">${order.time} <span class="text-sm font-bold ml-1 ${order.type==='內用'?'text-blue-500':'text-orange-500'}">[${order.type}]</span></div>
+                                <span class="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-mono">${order.id}</span>
+                                <div class="text-lg font-black text-gray-800 mt-1">${order.time} <span class="text-sm font-bold ${order.type==='內用'?'text-blue-500':'text-green-600'}">[${order.type}]</span></div>
                             </div>
                             <div class="text-right">
-                                <div class="text-xs text-gray-400">總金額</div>
-                                <div class="text-md font-bold text-slate-800">NT$ ${order.total}</div>
+                                <div class="text-md font-bold text-gray-800">NT$ ${order.total}</div>
                             </div>
                         </div>
-                        <div class="divide-y divide-gray-100 my-3 bg-gray-50/50 p-2 rounded-lg border border-gray-100">
+                        <div class="my-2 bg-gray-50 p-2 rounded-lg">
                             ${itemsHtml}
                         </div>
-                        ${order.note ? `<div class="text-xs bg-amber-50 text-amber-700 p-2 rounded-md mb-3 border border-amber-200/50"><i class="fa-solid fa-comment-dots mr-1"></i>${order.note}</div>` : ''}
+                        ${order.note ? `<div class="text-xs bg-yellow-50 text-yellow-800 p-2 rounded mb-2 border border-yellow-200">💬 ${order.note}</div>` : ''}
                         
-                        <!-- 按鈕切換狀態 -->
                         <div class="flex gap-2 mt-2">
-                            ${order.status === '未製作' ? `
-                                <button onclick="changeStatus('${order.id}', '製作中')" class="w-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold py-2 rounded-lg transition">開始製作</button>
-                            ` : ''}
-                            ${order.status === '製作中' ? `
-                                <button onclick="changeStatus('${order.id}', '已完成')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-bold py-2 rounded-lg transition">完成出餐</button>
-                            ` : ''}
-                            ${order.status === '已完成' ? `
-                                <span class="text-xs text-emerald-600 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-md w-full text-center"><i class="fa-solid fa-check mr-1"></i>已在雲端封存</span>
-                            ` : ''}
+                            ${order.status === '未製作' ? `<button onclick="changeStatus('${order.id}', '製作中')" class="w-full bg-blue-500 text-white text-sm font-bold py-2 rounded-lg">開始製作</button>` : ''}
+                            ${order.status === '製作中' ? `<button onclick="changeStatus('${order.id}', '已完成')" class="w-full bg-green-600 text-white text-sm font-bold py-2 rounded-lg">完成出餐</button>` : ''}
+                            ${order.status === '已完成' ? `<span class="text-xs text-green-600 font-bold w-full text-center py-2 bg-green-100 rounded-lg">✓ 已同步雲端儲存</span>` : ''}
                         </div>
                     </div>
                 `;
 
-                if (order.status === '未製作') {
-                    listNew.innerHTML += cardHtml;
-                    cNew++;
-                } else if (order.status === '製作中') {
-                    listProgress.innerHTML += cardHtml;
-                    cProgress++;
-                } else if (order.status === '已完成') {
-                    listDone.innerHTML = cardHtml + listDone.innerHTML; // 最新完成的排前面
-                    cDone++;
-                }
+                if (order.status === '未製作') { listNew.innerHTML += cardHtml; cNew++; }
+                else if (order.status === '製作中') { listProgress.innerHTML += cardHtml; cProgress++; }
+                else if (order.status === '已完成') { listDone.innerHTML = cardHtml + listDone.innerHTML; cDone++; }
             });
 
-            // 數字更新
             document.getElementById('count-new').innerText = cNew;
             document.getElementById('count-progress').innerText = cProgress;
             document.getElementById('count-done').innerText = cDone;
 
-            // 音效提示機制 (只在新訂單總數增加時發出叮咚聲)
             if (previousOrderCount !== -1 && orders.length > previousOrderCount) {
-                document.getElementById('alert-sound').play().catch(e => console.log("等待手動觸發音效"));
+                document.getElementById('alert-sound').play().catch(() => {});
             }
             previousOrderCount = orders.length;
         }
 
-        // 修改雲端訂單狀態
         function changeStatus(id, newStatus) {
             fetch(API_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ action: "update", id: id, status: newStatus })
-            })
-            .then(() => {
-                // 為了避免雲端延遲，本地直接先手動刷新
-                fetchOrders();
-            });
+            }).then(() => fetchOrders());
         }
 
-        // 初始化與定時輪詢
         fetchOrders();
-        setInterval(fetchOrders, 5000); // 💡 每 5 秒鐘自動同步一次雲端
+        setInterval(fetchOrders, 5000);
     </script>
 </body>
 </html>
