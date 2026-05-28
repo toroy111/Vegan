@@ -3,126 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>珍愛家廚房接單後台</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>珍愛家早午餐 - 後台訂單管理系統</title>
+    <style>
+        body { font-family: "PingFang TC", sans-serif; background-color: #f1f2f6; margin: 0; padding: 20px; }
+        .admin-container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #edf2f7; padding-bottom: 15px; margin-bottom: 20px; }
+        h1 { color: #2c3e50; margin: 0; font-size: 24px; }
+        .refresh-btn { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .refresh-btn:hover { background: #2980b9; }
+        
+        .order-card { background: #f8f9fa; border: 1px solid #e1e8ed; border-radius: 8px; padding: 15px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 15px; align-items: start; }
+        @media (max-width: 768px) { .order-card { grid-template-columns: 1fr; } }
+        
+        .info-sec p { margin: 4px 0; font-size: 14px; color: #4a5568; }
+        .info-sec strong { color: #2d3748; }
+        .items-sec { background: white; padding: 10px; border-radius: 6px; border: 1px solid #edf2f7; white-space: pre-line; font-size: 14px; line-height: 1.4; color: #2c3e50; }
+        .status-sec { text-align: right; }
+        .price-tag { color: #e74c3c; font-weight: bold; font-size: 20px; display: block; margin-bottom: 10px; }
+        .status-badge { display: inline-block; padding: 6px 12px; background: #e67e22; color: white; border-radius: 4px; font-weight: bold; font-size: 12px; }
+        #loading { text-align: center; color: #718096; padding: 4px; font-weight: bold; }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body>
 
-    <header class="bg-gray-800 text-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="text-xl font-black tracking-wider"><i class="fa-solid fa-leaf text-green-400 mr-2"></i>珍愛家雲端接單中心</h1>
-        <div class="flex items-center gap-4">
-            <span class="text-xs bg-green-500 bg-opacity-20 text-green-400 border border-green-500 border-opacity-30 px-2 py-1 rounded">雲端同步中 (5秒)</span>
-            <button onclick="fetchOrders()" class="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-rotate mr-1"></i>手動重整</button>
+    <div class="admin-container">
+        <div class="header">
+            <h1>🍳 珍愛家早午餐 — 即時訂單管理後台</h1>
+            <button class="refresh-btn" onclick="fetchOrders()">🔄 重新整理訂單</button>
         </div>
-    </header>
-
-    <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
-        <div class="bg-gray-200 p-4 rounded-2xl">
-            <div class="flex justify-between items-center mb-4 border-b border-gray-300 pb-2">
-                <h3 class="font-extrabold text-gray-700 text-lg">🔔 新進訂單</h3>
-                <span id="count-new" class="bg-red-500 text-white px-2.5 py-0.5 rounded-full text-xs font-bold">0</span>
-            </div>
-            <div id="list-new" class="space-y-4 max-h-screen overflow-y-auto"></div>
-        </div>
-
-        <div class="bg-blue-50 p-4 rounded-2xl">
-            <div class="flex justify-between items-center mb-4 border-b border-blue-200 pb-2">
-                <h3 class="font-extrabold text-blue-700 text-lg">🍳 製作中</h3>
-                <span id="count-progress" class="bg-blue-500 text-white px-2.5 py-0.5 rounded-full text-xs font-bold">0</span>
-            </div>
-            <div id="list-progress" class="space-y-4 max-h-screen overflow-y-auto"></div>
-        </div>
-
-        <div class="bg-green-50 p-4 rounded-2xl">
-            <div class="flex justify-between items-center mb-4 border-b border-green-200 pb-2">
-                <h3 class="font-extrabold text-green-700 text-lg">✅ 今日已完成</h3>
-                <span id="count-done" class="bg-green-500 text-white px-2.5 py-0.5 rounded-full text-xs font-bold">0</span>
-            </div>
-            <div id="list-done" class="space-y-4 max-h-screen overflow-y-auto"></div>
-        </div>
+        
+        <div id="loading">正在連線至 Google 試算表載入訂單...</div>
+        <div id="orders-list"></div>
     </div>
 
-    <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/951/951-200.wav" preload="auto"></audio>
-
     <script>
-        // ⚠️ 請在這裡換成你從 Google 部署得到的網址 ⚠️
-        const API_URL = "你的Google網址";
-        
-        let previousOrderCount = -1;
+        // ⚠️ 請在這裡換成與前台相同的 Google Apps Script 部署網址 ⚠️
+        const API_URL = "您的_GOOGLE_GAS_部署網址";
 
         function fetchOrders() {
-            if(API_URL === "你的Google網址") return;
+            const listDiv = document.getElementById('orders-list');
+            const loadingDiv = document.getElementById('loading');
+            loadingDiv.style.display = 'block';
+            
+            // 透過 GAS doGet 撈取最新資料
             fetch(API_URL)
-                .then(res => res.json())
-                .then(orders => renderDashboard(orders))
-                .catch(err => console.error("雲端連線失敗:", err));
-        }
-
-        function renderDashboard(orders) {
-            const listNew = document.getElementById('list-new');
-            const listProgress = document.getElementById('list-progress');
-            const listDone = document.getElementById('list-done');
-
-            listNew.innerHTML = ''; listProgress.innerHTML = ''; listDone.innerHTML = '';
-            let cNew = 0, cProgress = 0, cDone = 0;
-
-            orders.forEach(order => {
-                let itemsHtml = '';
-                order.items.forEach(item => {
-                    itemsHtml += `<div class="flex justify-between text-sm py-0.5 text-gray-700 font-bold"><span>${item.name}</span><span>× ${item.qty}</span></div>`;
+            .then(res => res.json())
+            .then(data => {
+                loadingDiv.style.display = 'none';
+                if(data.length === 0) {
+                    listDiv.innerHTML = '<p style="text-align:center; color:#a0aec0; padding:4px;">目前尚無任何訂單紀錄喔！</p>';
+                    return;
+                }
+                
+                let html = '';
+                // 將新訂單排序在最上方
+                data.reverse().forEach(order => {
+                    html += `
+                    <div class="order-card">
+                        <div class="info-sec">
+                            <p><strong>單號：</strong>${order.id}</p>
+                            <p><strong>日期：</strong>${order.date}</p>
+                            <p><strong>時間：</strong>${order.time}</p>
+                            <p><strong>方式：</strong>${order.type} (填寫: ${order.tableNum})</p>
+                            <p><strong>電話：</strong>${order.phone}</p>
+                            <p><strong>LINE：</strong>${order.line}</p>
+                        </div>
+                        <div class="items-sec"><strong>🛒 明細：</strong>\n${order.itemsSummary}\n\n<span style="color:#718096;">📝 備註：${order.note}</span></div>
+                        <div class="status-sec">
+                            <span class="price-tag">$${order.total}</span>
+                            <span class="status-badge">${order.status}</span>
+                        </div>
+                    </div>`;
                 });
-
-                const cardHtml = `
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-                        <div class="flex justify-between items-start border-b pb-2 mb-2">
-                            <div>
-                                <span class="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-mono">${order.id}</span>
-                                <div class="text-lg font-black text-gray-800 mt-1">${order.time} <span class="text-sm font-bold ${order.type==='內用'?'text-blue-500':'text-green-600'}">[${order.type}]</span></div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-md font-bold text-gray-800">NT$ ${order.total}</div>
-                            </div>
-                        </div>
-                        <div class="my-2 bg-gray-50 p-2 rounded-lg">
-                            ${itemsHtml}
-                        </div>
-                        ${order.note ? `<div class="text-xs bg-yellow-50 text-yellow-800 p-2 rounded mb-2 border border-yellow-200">💬 ${order.note}</div>` : ''}
-                        
-                        <div class="flex gap-2 mt-2">
-                            ${order.status === '未製作' ? `<button onclick="changeStatus('${order.id}', '製作中')" class="w-full bg-blue-500 text-white text-sm font-bold py-2 rounded-lg">開始製作</button>` : ''}
-                            ${order.status === '製作中' ? `<button onclick="changeStatus('${order.id}', '已完成')" class="w-full bg-green-600 text-white text-sm font-bold py-2 rounded-lg">完成出餐</button>` : ''}
-                            ${order.status === '已完成' ? `<span class="text-xs text-green-600 font-bold w-full text-center py-2 bg-green-100 rounded-lg">✓ 已同步雲端儲存</span>` : ''}
-                        </div>
-                    </div>
-                `;
-
-                if (order.status === '未製作') { listNew.innerHTML += cardHtml; cNew++; }
-                else if (order.status === '製作中') { listProgress.innerHTML += cardHtml; cProgress++; }
-                else if (order.status === '已完成') { listDone.innerHTML = cardHtml + listDone.innerHTML; cDone++; }
+                listDiv.innerHTML = html;
+            })
+            .catch(err => {
+                loadingDiv.innerText = '❌ 無法讀取資料，請確認試算表共用權限已開，或 GAS 網址是否正確。';
+                console.error(err);
             });
-
-            document.getElementById('count-new').innerText = cNew;
-            document.getElementById('count-progress').innerText = cProgress;
-            document.getElementById('count-done').innerText = cDone;
-
-            if (previousOrderCount !== -1 && orders.length > previousOrderCount) {
-                document.getElementById('alert-sound').play().catch(() => {});
-            }
-            previousOrderCount = orders.length;
         }
 
-        function changeStatus(id, newStatus) {
-            fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "update", id: id, status: newStatus })
-            }).then(() => fetchOrders());
-        }
-
-        fetchOrders();
-        setInterval(fetchOrders, 5000);
+        // 網頁開啟時自動載入
+        window.onload = fetchOrders;
     </script>
 </body>
 </html>
