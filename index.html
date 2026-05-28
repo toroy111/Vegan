@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>珍愛家素食早午餐 - 線上點餐系統</title>
+    <title>珍愛家素食早午餐 - 摺疊分類線上點餐</title>
     <style>
         :root { --primary-color: #e67e22; --secondary-color: #27ae60; --bg-color: #f5f6fa; --dark-color: #2c3e50; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
         body { background-color: var(--bg-color); color: var(--dark-color); padding-bottom: 60px; }
         header { background-color: var(--primary-color); color: white; padding: 20px 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         header h1 { font-size: 24px; margin-bottom: 5px; }
-        header p { font-size: 13px; opacity: 0.9; line-height: 1.5; }
+        header p { font-size: 13px; opacity: 0.9; }
         
         .container { max-width: 1400px; margin: 20px auto; padding: 0 15px; }
         .shop-layout { display: grid; grid-template-columns: 2.5fr 1fr; gap: 20px; }
@@ -52,7 +52,6 @@
         .cart-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #edf2f7; font-size: 14px; align-items: center; }
         .cart-total { font-size: 22px; font-weight: bold; text-align: right; margin: 20px 0; color: #e53e3e; }
         .submit-order-btn { width: 100%; background: var(--secondary-color); color: white; border: none; padding: 14px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(39,174,96,0.2); }
-        .submit-order-btn:disabled { background: #a0aec0; cursor: not-allowed; box-shadow: none; }
         
         .input-field { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; }
         .flex-inputs { display: flex; gap: 8px; margin-bottom: 4px; }
@@ -125,7 +124,7 @@
     </div>
 
     <script>
-        // 圖片上對應的所有餐點與真實價格數據庫
+        // 這是你原本完整的漂亮菜單資料庫
         const menuData = [
             {
                 category: "🥪 主食系列 (吐司 / 漢堡 / 潛艇堡)",
@@ -250,7 +249,7 @@
             }
         ];
 
-        // ⚠️ 請在這裡換成您剛剛從 Google Apps Script 部署得到的網址 ⚠️
+        // ⚠️【請將這裡換成你從 Google 部署得到的 Web App 網址】⚠️
         const API_URL = "https://script.google.com/macros/s/AKfycbztfDXW-fkG0C3Xf83Uj2FYRoRtS7eqEx9Pwh5PBprdarTeQ4yUYqZcID7cb6v5hI7n/exec";
 
         let cart = [];
@@ -261,7 +260,7 @@
 
             menuData.forEach((catGroup) => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = 'accordion-item'; 
+                itemDiv.className = 'accordion-item';
                 
                 const header = document.createElement('div');
                 header.className = 'accordion-header';
@@ -295,9 +294,7 @@
             nameDiv.innerText = item.name;
             mainInfo.appendChild(nameDiv);
             
-            // 根據規格與分類渲染客製化按鈕 (完全不用 eval，安全度 100%)
             if (item.types && item.prices) {
-                // 主食分類吐司/漢堡/潛艇堡
                 const lbl1 = document.createElement('div'); lbl1.className = 'opt-label'; lbl1.innerText = '選擇種類：'; mainInfo.appendChild(lbl1);
                 const grp1 = document.createElement('div'); grp1.className = 'option-group'; grp1.id = `type-${item.id}`;
                 item.types.forEach((t, i) => {
@@ -320,7 +317,6 @@
                 mainInfo.appendChild(grp2);
             } 
             else if (item.prices && !item.tempOptions) {
-                // 蛋餅/抓餅, 麵食, 果醬吐司
                 const lbl = document.createElement('div'); lbl.className = 'opt-label'; lbl.innerText = '選擇規格：'; mainInfo.appendChild(lbl);
                 const grp = document.createElement('div'); grp.className = 'option-group'; grp.id = `spec-${item.id}`;
                 Object.keys(item.prices).forEach((spec, idx) => {
@@ -331,7 +327,6 @@
                 mainInfo.appendChild(grp);
             }
             else if (item.prices && item.tempOptions) {
-                // 飲料
                 const lbl1 = document.createElement('div'); lbl1.className = 'opt-label'; lbl1.innerText = '容量：'; mainInfo.appendChild(lbl1);
                 const grp1 = document.createElement('div'); grp1.className = 'option-group'; grp1.id = `size-${item.id}`;
                 Object.keys(item.prices).forEach((size, idx) => {
@@ -351,7 +346,6 @@
                 mainInfo.appendChild(grp2);
             }
             else if (item.typeOptions) {
-                // 荷包蛋客製
                 const lbl = document.createElement('div'); lbl.className = 'opt-label'; lbl.innerText = '客製：'; mainInfo.appendChild(lbl);
                 const grp = document.createElement('div'); grp.className = 'option-group'; grp.id = `custom-${item.id}`;
                 item.typeOptions.forEach((o, i) => {
@@ -364,7 +358,6 @@
             
             wrapper.appendChild(mainInfo);
             
-            // 底部價格與加入按鈕
             const footer = document.createElement('div');
             footer.className = 'item-footer';
             
@@ -464,10 +457,16 @@
 
         function removeFromCart(index) { cart.splice(index, 1); renderCart(); }
 
+        // ✨ 這是修正過、完美融合你的精美表格欄位的雲端送單機制
         function submitOrder() {
             if(cart.length === 0) { alert('您的購物車是空的！'); return; }
             const phone = document.getElementById('user-phone').value.trim();
             if(!phone) { alert('為了聯絡取餐，請務必填寫聯絡電話！'); return; }
+            
+            if(API_URL === "你的Google網址") {
+                alert("⚠️ 請先將 index.html 程式碼中的 API_URL 換成你的 Google Apps Script 網址喔！");
+                return;
+            }
 
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
@@ -479,6 +478,7 @@
             const note = document.getElementById('order-note').value || '無';
             const total = parseInt(document.getElementById('cart-total-price').innerText);
             
+            // 完美打包你左邊畫面的所有欄位
             const payload = {
                 date: oDate,
                 type: dtype,
@@ -490,15 +490,14 @@
                 total: total
             };
 
-            // 利用 fetch 發送到 Google Apps Script
             fetch(API_URL, {
                 method: "POST",
-                mode: "no-cors", // 避免跨網域報錯，維持安全穩定傳輸
+                mode: "no-cors", 
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                alert(`🎉 點餐成功！訂單已送到後台與試算表囉！`);
+                alert(`🎉 點餐成功！訂單已順利送往試算表與店家後台囉！`);
                 cart = [];
                 document.getElementById('order-note').value = '';
                 renderCart();
