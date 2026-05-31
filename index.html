@@ -69,7 +69,7 @@
 
     <header>
         <h1>珍愛家素食早午餐 (JLH BRUNCH)</h1>
-        <p>📞 電話：0908-313913<br>⏰ 營業時間：二至五 5:30~13:00 / 假日 5:30~13:30 (每星期一公休)</p>
+        <p>電話：0908-313913 | 營業時間：二至五 5:30~13:00 / 六日 5:30~13:30 (每週一公休)</p>
     </header>
 
     <div class="container">
@@ -82,31 +82,31 @@
             <div class="cart-section" id="target-cart-section">
                 <h3>🛒 我的購物車</h3>
                 <div style="margin: 15px 0 10px 0;">
-                    <label>📅 取餐日期：</label>
+                    <label for="order-date">📅 取餐日期：</label>
                     <input type="date" id="order-date" class="input-field">
                     
                     <div class="flex-inputs">
                         <div style="width: 45%;">
-                            <label>🍽️ 方式：</label>
+                            <label for="dining-type">🍽️ 方式：</label>
                             <select id="dining-type" class="input-field">
                                 <option value="外帶">外帶</option>
                                 <option value="內用">內用</option>
                             </select>
                         </div>
                         <div style="width: 55%;">
-                            <label>👤 桌號/姓名：</label>
+                            <label for="table-num">👤 桌號/姓名：</label>
                             <input type="text" id="table-num" placeholder="桌號或填取餐人" class="input-field">
                         </div>
                     </div>
 
-                    <label>📞 聯絡電話 (必填)：</label>
+                    <label for="user-phone">📞 聯絡電話 (必填)：</label>
                     <input type="tel" id="user-phone" placeholder="填寫聯絡手機" class="input-field" required>
 
-                    <label>💬 LINE ID (選填)：</label>
+                    <label {id="user-line-label"} for="user-line">💬 LINE ID (選填)：</label>
                     <input type="text" id="user-line" placeholder="方便聯絡通知" class="input-field">
                     
-                    <label>✍️ 訂單備註：</label>
-                    <textarea id="order-note" class="input-field" placeholder="特殊客製要求請寫在這邊" style="height: 55px; resize: none;"></textarea>
+                    <label for="order-note">✍️ 訂單備註：</label>
+                    <textarea id="order-note" class="input-field" placeholder="如有其他特殊客製要求請寫在這邊" style="height: 55px; resize: none;"></textarea>
                 </div>
                 <hr style="border: none; border-top: 1px solid #edf2f7;">
                 <div id="cart-items-list" style="margin-top: 15px; max-height: 250px; overflow-y: auto;">
@@ -119,46 +119,64 @@
     </div>
 
     <div class="float-buttons">
-        <button class="float-btn float-cart-btn" onclick="scrollToCart()" title="直達購物車填單">🛒</button>
+        <button class="float-btn float-cart-btn" onclick="scrollToCart()" title="直達購物車填單">📋</button>
         <button class="float-btn" onclick="scrollToTop()" title="回頁面頂部">🚀</button>
     </div>
 
-    <script>
-        // 這是你原本完整的漂亮菜單資料庫
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // 🌟 填入你上傳的手機截圖資料
+        const firebaseConfig = {
+            apiKey: "AlzaSyAgeP2a6Z-TqJaZ5F0j_2UoXVQ_WE3sckw",
+            authDomain: "jaffff-34d02.firebaseapp.com",
+            projectId: "jaffff-34d02",
+            storageBucket: "jaffff-34d02.firebasestorage.app",
+            messagingSenderId: "332430248808",
+            appId: "1:332430248808:web:b81a52b4c3b15021e664dd",
+            measurementId: "G-T9YGSE9EX6",
+            databaseURL: "https://jaffff-34d02-default-rtdb.firebaseio.com" // 系統會自動對應你的 Project ID
+        };
+
+        // 初始化 Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
         const menuData = [
             {
-                category: "🥪 主食系列 (吐司 / 漢堡 / 潛艇堡)",
+                category: " Sandwich 主食系列 (吐司 / 漢堡 / 潛艇堡)",
                 items: [
-                    { id: "m_01", name: "煎蛋", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: false, prices: { "吐司_無蛋": 30, "漢堡_無蛋": 30, "潛艇堡_無蛋": 40 } },
-                    { id: "m_02", name: "鮮蔬", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 40, "吐司_無蛋": 25, "漢堡_加蛋": 40, "漢堡_無蛋": 25, "潛艇堡_加蛋": 50, "潛艇堡_無蛋": 35 } },
-                    { id: "m_03", name: "羅勒起士蛋", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: false, prices: { "吐司_加蛋": 40, "漢堡_加蛋": 40, "潛艇堡_加蛋": 50 } },
-                    { id: "m_04", name: "起士鮮蔬", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 45, "吐司_無蛋": 30, "漢堡_加蛋": 45, "漢堡_無蛋": 30, "潛艇堡_加蛋": 55, "潛艇堡_無蛋": 40 } },
-                    { id: "m_05", name: "玉米", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 45, "吐司_無蛋": 30, "漢堡_加蛋": 45, "漢堡_無蛋": 30, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 45 } },
-                    { id: "m_06", name: "素肉鬆", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 45, "吐司_無蛋": 30, "漢堡_加蛋": 45, "漢堡_無蛋": 30, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 45 } },
-                    { id: "m_07", name: "火腿", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 45, "吐司_無蛋": 30, "漢堡_加蛋": 45, "漢堡_無蛋": 30, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 45 } },
-                    { id: "m_08", name: "培根", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 45, "吐司_無蛋": 30, "漢堡_加蛋": 45, "漢堡_無蛋": 30, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 45 } },
-                    { id: "m_09", name: "香椿野菇(全素)", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 50, "吐司_無蛋": 35, "漢堡_加蛋": 50, "漢堡_無蛋": 35, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 50 } },
-                    { id: "m_10", name: "薯餅", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 50, "吐司_無蛋": 35, "漢堡_加蛋": 50, "漢堡_無蛋": 35, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 50 } },
-                    { id: "m_11", name: "鮪魚沙拉", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 55, "吐司_無蛋": 40, "漢堡_加蛋": 55, "漢堡_無蛋": 40, "潛艇堡_加蛋": 65, "潛艇堡_無蛋": 50 } },
-                    { id: "m_12", name: "香雞排", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 55, "吐司_無蛋": 40, "漢堡_加蛋": 55, "漢堡_無蛋": 40, "潛艇堡_加蛋": 65, "潛艇堡_無蛋": 50 } },
-                    { id: "m_13", name: "花生薯餅(全素)", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 60, "吐司_無蛋": 45, "漢堡_加蛋": 60, "漢堡_無蛋": 45, "潛艇堡_加蛋": 70, "潛艇堡_無蛋": 55 } },
-                    { id: "m_14", name: "熱狗", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 60, "吐司_無蛋": 45, "漢堡_加蛋": 60, "漢堡_無蛋": 45, "潛艇堡_加蛋": 70, "潛艇堡_無蛋": 55 } },
-                    { id: "m_15", name: "黑胡椒豬排", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 65, "吐司_無蛋": 50, "漢堡_加蛋": 65, "漢堡_無蛋": 50, "潛艇堡_加蛋": 75, "潛艇堡_無蛋": 60 } },
-                    { id: "m_16", name: "北海鱈魚", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 65, "吐司_無蛋": 50, "漢堡_加蛋": 65, "漢堡_無蛋": 50, "潛艇堡_加蛋": 75, "潛艇堡_無蛋": 60 } },
-                    { id: "m_17", name: "香辣卡拉雞", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 65, "吐司_無蛋": 50, "漢堡_加蛋": 65, "漢堡_無蛋": 50, "潛艇堡_加蛋": 75, "潛艇堡_無蛋": 60 } },
-                    { id: "m_18", name: "雙芥末花枝", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 70, "吐司_無蛋": 55, "漢堡_加蛋": 70, "漢堡_無蛋": 55, "潛艇堡_加蛋": 80, "潛艇堡_無蛋": 65 } },
-                    { id: "m_19", name: "美式熱狗(全素)", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 70, "吐司_無蛋": 55, "漢堡_加蛋": 70, "漢堡_無蛋": 55, "潛艇堡_加蛋": 80, "潛艇堡_無蛋": 65 } },
-                    { id: "m_20", name: "經典牛小排", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 75, "吐司_無蛋": 60, "漢堡_加蛋": 75, "漢堡_無蛋": 60, "潛艇堡_加蛋": 85, "潛艇堡_無蛋": 70 } },
-                    { id: "m_21", name: "酸菜牛肉", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 75, "吐司_無蛋": 60, "漢堡_加蛋": 75, "漢堡_無蛋": 60, "潛艇堡_加蛋": 85, "潛艇堡_無蛋": 70 } },
-                    { id: "m_22", name: "墨西哥辣雞(全素)", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 75, "吐司_無蛋": 60, "漢堡_加蛋": 75, "漢堡_無蛋": 60, "潛艇堡_加蛋": 85, "潛艇堡_無蛋": 70 } },
-                    { id: "m_23", name: "超級總匯", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 75, "吐司_無蛋": 60, "漢堡_加蛋": 75, "漢堡_無蛋": 60, "潛艇堡_加蛋": 85, "潛艇堡_無蛋": 70 } },
-                    { id: "m_24", name: "雙魚寶寶", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 80, "吐司_無蛋": 65, "漢堡_加蛋": 80, "漢堡_無蛋": 65, "潛艇堡_加蛋": 90, "潛艇堡_無蛋": 75 } },
-                    { id: "m_25", name: "海陸雙拼", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 80, "吐司_無蛋": 65, "漢堡_加蛋": 80, "漢堡_無蛋": 65, "潛艇堡_加蛋": 90, "潛艇堡_無蛋": 75 } },
-                    { id: "m_26", name: "泡菜卡拉", types: ["吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "吐司_加蛋": 80, "吐司_無蛋": 65, "漢堡_加蛋": 80, "漢堡_無蛋": 65, "潛艇堡_加蛋": 90, "潛艇堡_無蛋": 75 } }
+                    { id: "m_01", name: "煎蛋", types: ["白/全麥吐司", "漢堡", "潛艇堡"], prices: { "白/全麥吐司_無蛋": 30, "漢堡_無蛋": 30, "潛艇堡_無蛋": 40 } },
+                    { id: "m_02", name: "鮮蔬", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 40, "白/全麥吐司_無蛋": 25, "漢堡_加蛋": 40, "漢堡_無蛋": 25, "潛艇堡_加蛋": 50, "潛艇堡_無蛋": 35 } },
+                    { id: "m_03", name: "羅勒起士蛋", types: ["白/全麥吐司", "漢堡", "潛艇堡"], prices: { "白/全麥吐司_加蛋": 40, "漢堡_加蛋": 40, "潛艇堡_加蛋": 50 } },
+                    { id: "m_04", name: "起士鮮蔬", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 45, "白/全麥吐司_無蛋": 30, "漢堡_加蛋": 45, "漢堡_無蛋": 30, "潛艇堡_加蛋": 55, "潛艇堡_無蛋": 40 } },
+                    { id: "m_05", name: "玉米", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 45, "白/全麥吐司_無蛋": 30, "漢堡_加蛋": 45, "漢堡_無蛋": 30, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 45 } },
+                    { id: "m_06", name: "素肉鬆", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 45, "白/全麥吐司_無蛋": 30, "漢堡_加蛋": 45, "漢堡_無蛋": 30, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 45 } },
+                    { id: "m_07", name: "火腿", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 45, "白/全麥吐司_無蛋": 30, "漢堡_加蛋": 45, "漢堡_無蛋": 30, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 45 } },
+                    { id: "m_08", name: "培根", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 45, "白/全麥吐司_無蛋": 30, "漢堡_加蛋": 45, "漢堡_無蛋": 30, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 45 } },
+                    { id: "m_09", name: "香椿野菇(全素)", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 50, "白/全麥吐司_無蛋": 35, "漢堡_加蛋": 50, "漢堡_無蛋": 35, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 50 } },
+                    { id: "m_10", name: "薯餅", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 50, "白/全麥吐司_無蛋": 35, "漢堡_加蛋": 50, "漢堡_無蛋": 35, "潛艇堡_加蛋": 60, "潛艇堡_無蛋": 50 } },
+                    { id: "m_11", name: "鮪魚沙拉", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 55, "白/全麥吐司_無蛋": 40, "漢堡_加蛋": 55, "漢堡_無蛋": 40, "潛艇堡_加蛋": 65, "潛艇堡_無蛋": 50 } },
+                    { id: "m_12", name: "香雞排", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 55, "白/全麥吐司_無蛋": 40, "漢堡_加蛋": 55, "漢堡_無蛋": 40, "潛艇堡_加蛋": 65, "潛艇堡_無蛋": 50 } },
+                    { id: "m_13", name: "花生薯餅(全素)", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 60, "白/全麥吐司_無蛋": 45, "漢堡_加蛋": 60, "漢堡_無蛋": 45, "潛艇堡_加蛋": 70, "潛艇堡_無蛋": 55 } },
+                    { id: "m_14", name: "熱狗", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 60, "白/全麥吐司_無蛋": 45, "漢堡_加蛋": 60, "漢堡_無蛋": 45, "潛艇堡_加蛋": 70, "潛艇堡_無蛋": 55 } },
+                    { id: "m_15", name: "黑胡椒豬排", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 65, "白/全麥吐司_無蛋": 50, "漢堡_加蛋": 65, "漢堡_無蛋": 50, "潛艇堡_加蛋": 75, "潛艇堡_無蛋": 60 } },
+                    { id: "m_16", name: "北海鱈魚", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 65, "白/全麥吐司_無蛋": 50, "漢堡_加蛋": 65, "漢堡_無蛋": 50, "潛艇堡_加蛋": 75, "潛艇堡_無蛋": 60 } },
+                    { id: "m_17", name: "香辣卡拉雞", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 65, "白/全麥吐司_無蛋": 50, "漢堡_加蛋": 65, "漢堡_無蛋": 50, "潛艇堡_加蛋": 75, "潛艇堡_無蛋": 60 } },
+                    { id: "m_18", name: "雙芥末花枝", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 70, "白/全麥吐司_無蛋": 55, "漢堡_加蛋": 70, "漢堡_無蛋": 55, "潛艇堡_加蛋": 80, "潛艇堡_無蛋": 65 } },
+                    { id: "m_19", name: "美式熱狗(全素)", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 70, "白/全麥吐司_無蛋": 55, "漢堡_加蛋": 70, "漢堡_無蛋": 55, "潛艇堡_加蛋": 80, "潛艇堡_無蛋": 65 } },
+                    { id: "m_20", name: "經典牛小排", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 75, "白/全麥吐司_無蛋": 60, "漢堡_加蛋": 75, "漢堡_無蛋": 60, "潛艇堡_加蛋": 85, "潛艇堡_無蛋": 70 } },
+                    { id: "m_21", name: "酸菜牛肉", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 75, "白/全麥吐司_無蛋": 60, "漢堡_加蛋": 75, "漢堡_無蛋": 60, "潛艇堡_加蛋": 85, "潛艇堡_無蛋": 70 } },
+                    { id: "m_22", name: "墨西哥辣雞(全素)", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 75, "白/全麥吐司_無蛋": 60, "漢堡_加蛋": 75, "漢堡_無蛋": 60, "潛艇堡_加蛋": 85, "潛艇堡_無蛋": 70 } },
+                    { id: "m_23", name: "超級總匯", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 75, "白/全麥吐司_無蛋": 60, "漢堡_加蛋": 75, "漢堡_無蛋": 60, "潛艇堡_加蛋": 85, "潛艇堡_無蛋": 70 } },
+                    { id: "m_24", name: "雙魚寶寶", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 80, "白/全麥吐司_無蛋": 65, "漢堡_加蛋": 80, "漢堡_無蛋": 65, "潛艇堡_加蛋": 90, "潛艇堡_無蛋": 75 } },
+                    { id: "m_25", name: "海陸雙拼", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 80, "白/全麥吐司_無蛋": 65, "漢堡_加蛋": 80, "漢堡_無蛋": 65, "潛艇堡_加蛋": 90, "潛艇堡_無蛋": 75 } },
+                    { id: "m_26", name: "泡菜卡拉", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 80, "白/全麥吐司_無蛋": 65, "漢堡_加蛋": 80, "漢堡_無蛋": 65, "潛艇堡_加蛋": 90, "潛艇堡_無蛋": 75 } }
                 ]
             },
             {
-                category: "🍳 酥脆蛋餅 / 抓餅系列",
+                category: "🍳 酥脆蛋餅 / 抓餅系列 (抓餅皆為蛋餅價格+20元)",
                 items: [
                     { id: "g_01", name: "原味", prices: { "蛋餅": 25, "抓餅": 45 } },
                     { id: "g_02", name: "日式", prices: { "蛋餅": 35, "抓餅": 55 } },
@@ -183,18 +201,18 @@
                 ]
             },
             {
-                category: "🍟 美味單點區",
+                category: "🍟 美味小吃單點區",
                 items: [
-                    { id: "s_01", name: "薯餅", price: 20 },
+                    { id: "s_01", name: "薯餅(1片)", price: 20 },
                     { id: "s_02", name: "薯條", price: 30 },
                     { id: "s_03", name: "粗脆薯", price: 40 },
                     { id: "s_04", name: "熱狗", price: 30 },
                     { id: "s_05", name: "鹹酥雞(奶素)", price: 40 },
-                    { id: "s_06", name: "辣雞米花", price: 40 },
-                    { id: "s_07", name: "麥克雞塊", price: 25 },
+                    { id: "s_06", name: "麥克雞塊", price: 25 },
+                    { id: "s_07", name: "辣雞米花", price: 40 },
                     { id: "s_08", name: "花枝圈", price: 40 },
                     { id: "s_09", name: "荷包蛋", typeOptions: ["全熟", "半熟"], price: 15 },
-                    { id: "s_10", name: "玉米煎蛋/九層塔煎蛋", price: 30 },
+                    { id: "s_10", name: "玉米煎蛋 / 九層塔煎蛋", price: 30 },
                     { id: "s_11", name: "綜合蔬菜炒蛋", price: 35 },
                     { id: "s_12", name: "薯餅蛋塔", price: 65 },
                     { id: "s_13", name: "玉米薯餅蛋塔", price: 75 },
@@ -207,50 +225,47 @@
                 ]
             },
             {
-                category: "🍝 美味麵食 (黑胡椒/白醬/肉燥/香椿/豆瓣/茄汁)",
+                category: "🍝 鐵板美味麵食",
                 items: [
-                    { id: "n_01", name: "黑胡椒麵", prices: { "單點": 40, "加蛋": 55, "加菜": 55, "套餐": 80 } },
-                    { id: "n_02", name: "奶油白醬麵", prices: { "單點": 40, "加蛋": 55, "加菜": 55, "套餐": 80 } },
-                    { id: "n_03", name: "香菇肉燥麵", prices: { "單點": 45, "加蛋": 60, "加菜": 60, "套餐": 85 } },
-                    { id: "n_04", name: "香椿拌麵", prices: { "單點": 45, "加蛋": 60, "加菜": 60, "套餐": 85 } },
-                    { id: "n_05", name: "饕辣豆瓣麵", prices: { "單點": 45, "加蛋": 60, "加菜": 60, "套餐": 85 } },
-                    { id: "n_06", name: "茄汁酸菜麵", prices: { "單點": 50, "加蛋": 65, "加菜": 65, "套餐": 90 } },
-                    { id: "n_07", name: "鐵板拌麵", prices: { "單點": 55, "加蛋": 70, "加菜": 70, "套餐": 95 } },
-                    { id: "n_08", name: "泡菜炒麵", prices: { "單點": 80, "加蛋": 95, "加菜": 95, "套餐": 120 } }
+                    { id: "n_01", name: "黑胡椒麵", prices: { "單點": 40, "加蛋": 55, "加菜": 55, "升級套餐": 80 } },
+                    { id: "n_02", name: "奶油白醬麵", prices: { "單點": 40, "加蛋": 55, "加菜": 55, "升級套餐": 80 } },
+                    { id: "n_03", name: "香菇肉燥麵", prices: { "單點": 45, "加蛋": 60, "加菜": 60, "升級套餐": 85 } },
+                    { id: "n_04", name: "香椿拌麵", prices: { "單點": 45, "加蛋": 60, "加菜": 60, "升級套餐": 85 } },
+                    { id: "n_05", name: "饕辣豆瓣麵", prices: { "單點": 45, "加蛋": 60, "加菜": 60, "升級套餐": 85 } },
+                    { id: "n_06", name: "茄汁酸菜麵", prices: { "單點": 50, "加蛋": 65, "加菜": 65, "升級套餐": 90 } },
+                    { id: "n_07", name: "鐵板拌麵", prices: { "單點": 55, "加蛋": 70, "加菜": 70, "升級套餐": 95 } },
+                    { id: "n_08", name: "泡菜炒麵", prices: { "單點": 80, "加蛋": 95, "加菜": 95, "升級套餐": 120 } }
                 ]
             },
             {
-                category: "🍯 果醬吐司系列",
+                category: "🍯 甜蜜果醬吐司系列",
                 items: [
-                    { id: "j_01", name: "花生", prices: { "薄片": 20, "厚片": 25 } },
-                    { id: "j_02", name: "巧克力", prices: { "薄片": 20, "厚片": 25 } },
-                    { id: "j_03", name: "草莓", prices: { "薄片": 20, "厚片": 25 } },
-                    { id: "j_04", name: "椰香", prices: { "薄片": 20, "厚片": 25 } },
-                    { id: "j_05", name: "抹茶", prices: { "薄片": 20, "厚片": 25 } }
+                    { id: "j_01", name: "花生果醬吐司", prices: { "薄片": 20, "厚片": 25 } },
+                    { id: "j_02", name: "巧克力果醬吐司", prices: { "薄片": 20, "厚片": 25 } },
+                    { id: "j_03", name: "草莓果醬吐司", prices: { "薄片": 20, "厚片": 25 } },
+                    { id: "j_04", name: "椰香果醬吐司", prices: { "薄片": 20, "厚片": 25 } },
+                    { id: "j_05", name: "抹茶果醬吐司", prices: { "薄片": 20, "厚片": 25 } }
                 ]
             },
             {
-                category: "🥤 飲品與慢湯",
+                category: "🥤 特調冷熱飲品 / 溫慢湯品",
                 items: [
-                    { id: "d_01", name: "紅茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小400cc": 15, "中500cc": 20, "大700cc": 30 } },
-                    { id: "d_02", name: "奶茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小400cc": 15, "中500cc": 20, "大700cc": 30 } },
-                    { id: "d_03", name: "鮮奶茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小400cc": 25, "中500cc": 30, "大700cc": 40 } },
-                    { id: "d_04", name: "豆漿", tempOptions: ["半糖","無糖"], prices: { "小400cc": 15, "中500cc": 20, "大700cc": 30 } },
-                    { id: "d_05", name: "柳丁汁", tempOptions: ["冰","涼"], prices: { "小400cc": 20, "中500cc": 25, "大700cc": 35 } },
-                    { id: "d_06", name: "豆漿紅茶", tempOptions: ["半糖","無糖"], prices: { "小400cc": 20, "中500cc": 25, "大700cc": 35 } },
-                    { id: "d_07", name: "鴛鴦奶茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小400cc": 20, "中500cc": 30, "大700cc": 40 } },
-                    { id: "d_08", name: "咖啡", tempOptions: ["半糖","無糖"], prices: { "小400cc": 20, "中500cc": 30, "大700cc": 40 } },
-                    { id: "d_09", name: "鮮奶咖啡", tempOptions: ["半糖","無糖"], prices: { "小400cc": 30, "中500cc": 40, "大700cc": 50 } },
-                    { id: "d_10", name: "豆乳咖啡", tempOptions: ["半糖","無糖"], prices: { "小400cc": 30, "中500cc": 40, "大700cc": 50 } },
-                    { id: "d_11", name: "鮮蜜豆奶", tempOptions: ["半糖","無糖"], prices: { "小400cc": 30, "中500cc": 40, "大700cc": 50 } },
+                    { id: "d_01", name: "紅茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小杯400cc": 15, "中杯500cc": 20, "大杯700cc": 30 } },
+                    { id: "d_02", name: "奶茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小杯400cc": 15, "中杯500cc": 20, "大杯700cc": 30 } },
+                    { id: "d_03", name: "鮮奶茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小杯400cc": 25, "中杯500cc": 30, "大杯700cc": 40 } },
+                    { id: "d_04", name: "豆漿", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 15, "中杯500cc": 20, "大杯700cc": 30 } },
+                    { id: "d_05", name: "柳丁汁", tempOptions: ["冰","涼"], prices: { "小杯400cc": 20, "中杯500cc": 25, "大杯700cc": 35 } },
+                    { id: "d_06", name: "豆漿紅茶", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 20, "中杯500cc": 25, "大杯700cc": 35 } },
+                    { id: "d_07", name: "鴛鴦奶茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小杯400cc": 20, "中杯500cc": 30, "大杯700cc": 40 } },
+                    { id: "d_08", name: "咖啡", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 20, "中杯500cc": 30, "大杯700cc": 40 } },
+                    { id: "d_09", name: "鮮奶咖啡", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 30, "中杯500cc": 40, "大杯700cc": 50 } },
+                    { id: "d_10", name: "豆乳咖啡", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 30, "中杯500cc": 40, "大杯700cc": 50 } },
+                    { id: "d_11", name: "鮮蜜豆奶", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 30, "中杯500cc": 40, "大杯700cc": 50 } },
                     { id: "d_12", name: "奶油濃湯", price: 35 },
                     { id: "d_13", name: "蔬菜湯", price: 35 }
                 ]
             }
         ];
-
-        // ⚠️【請將這裡換成你從 Google 部署得到的 Web App 網址】⚠️
-        const API_URL = "https://script.google.com/macros/s/AKfycbztfDXW-fkG0C3Xf83Uj2FYRoRtS7eqEx9Pwh5PBprdarTeQ4yUYqZcID7cb6v5hI7n/exec";
 
         let cart = [];
 
@@ -258,14 +273,14 @@
             const container = document.getElementById('accordion-container');
             container.innerHTML = '';
 
-            menuData.forEach((catGroup) => {
+            menuData.forEach((catGroup, catIdx) => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = 'accordion-item';
+                itemDiv.className = 'accordion-item'; 
                 
                 const header = document.createElement('div');
                 header.className = 'accordion-header';
                 header.innerText = catGroup.category;
-                header.onclick = function() { itemDiv.classList.toggle('active'); };
+                header.onclick = () => { itemDiv.classList.toggle('active'); };
                 
                 const content = document.createElement('div');
                 content.className = 'accordion-content';
@@ -274,7 +289,7 @@
                 grid.className = 'menu-grid';
                 
                 catGroup.items.forEach(item => {
-                    grid.appendChild(createMenuItemElement(item));
+                    grid.appendChild(renderMenuItemHtml(item));
                 });
                 
                 content.appendChild(grid);
@@ -284,149 +299,138 @@
             });
         }
 
-        function createMenuItemElement(item) {
+        function renderMenuItemHtml(item) {
             const wrapper = document.createElement('div');
             wrapper.className = 'menu-item';
             
-            const mainInfo = document.createElement('div');
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'item-name';
-            nameDiv.innerText = item.name;
-            mainInfo.appendChild(nameDiv);
+            let htmlInner = `<div><div class="item-name">${item.name}</div>`;
             
             if (item.types && item.prices) {
-                const lbl1 = document.createElement('div'); lbl1.className = 'opt-label'; lbl1.innerText = '選擇種類：'; mainInfo.appendChild(lbl1);
-                const grp1 = document.createElement('div'); grp1.className = 'option-group'; grp1.id = `type-${item.id}`;
+                htmlInner += `<div class="opt-label">選擇主食種類：</div><div class="option-group" id="type-${item.id}">`;
                 item.types.forEach((t, i) => {
-                    const btn = document.createElement('button'); btn.className = `opt-btn ${i===0?'selected':''}`; btn.innerText = t;
-                    btn.onclick = function() { selectSingleBtn(btn); updateMainPrice(item); };
-                    grp1.appendChild(btn);
+                    htmlInner += `<button class="opt-btn ${i===0?'selected':''}" data-val="${t}">${t}</button>`;
                 });
-                mainInfo.appendChild(grp1);
+                htmlInner += `</div>`;
                 
-                const lbl2 = document.createElement('div'); lbl2.className = 'opt-label'; lbl2.innerText = '加蛋選單：'; mainInfo.appendChild(lbl2);
-                const grp2 = document.createElement('div'); grp2.className = 'option-group'; grp2.id = `egg-${item.id}`;
                 if (item.hasEggOpt) {
-                    const b1 = document.createElement('button'); b1.className = 'opt-btn selected'; b1.innerText = '加蛋'; b1.onclick = function() { selectSingleBtn(b1); updateMainPrice(item); };
-                    const b2 = document.createElement('button'); b2.className = 'opt-btn'; b2.innerText = '無蛋'; b2.onclick = function() { selectSingleBtn(b2); updateMainPrice(item); };
-                    grp2.appendChild(b1); grp2.appendChild(b2);
+                    htmlInner += `<div class="opt-label">加蛋/無蛋選單：</div><div class="option-group" id="egg-${item.id}">
+                        <button class="opt-btn selected" data-val="加蛋">加蛋</button>
+                        <button class="opt-btn" data-val="無蛋">無蛋</button>
+                    </div>`;
                 } else {
-                    const b0 = document.createElement('button'); b0.className = 'opt-btn selected'; b0.style.cursor = 'default'; b0.innerText = item.prices[`${item.types[0]}_加蛋`]? '加蛋':'無蛋';
-                    grp2.appendChild(b0);
+                    htmlInner += `<div class="opt-label">固定配方：</div><div class="option-group" id="egg-${item.id}">
+                        <button class="opt-btn selected" style="cursor:default" onclick="return false;">無蛋</button>
+                    </div>`;
                 }
-                mainInfo.appendChild(grp2);
-            } 
+                let firstKey = item.hasEggOpt ? `${item.types[0]}_加蛋` : `${item.types[0]}_無蛋`;
+                let initPrice = item.prices[firstKey] || 30;
+                htmlInner += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
+            }
             else if (item.prices && !item.tempOptions) {
-                const lbl = document.createElement('div'); lbl.className = 'opt-label'; lbl.innerText = '選擇規格：'; mainInfo.appendChild(lbl);
-                const grp = document.createElement('div'); grp.className = 'option-group'; grp.id = `spec-${item.id}`;
+                htmlInner += `<div class="opt-label">選擇規格：</div><div class="option-group" id="spec-${item.id}">`;
                 Object.keys(item.prices).forEach((spec, idx) => {
-                    const btn = document.createElement('button'); btn.className = `opt-btn ${idx===0?'selected':''}`; btn.innerText = spec;
-                    btn.onclick = function() { selectSingleBtn(btn); updateSpecPrice(item, item.prices[spec]); };
-                    grp.appendChild(btn);
+                    htmlInner += `<button class="opt-btn ${idx===0?'selected':''}" data-val="${spec}" data-price="${item.prices[spec]}">${spec}</button>`;
                 });
-                mainInfo.appendChild(grp);
+                htmlInner += `</div>`;
+                let initPrice = Object.values(item.prices)[0];
+                htmlInner += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
             }
             else if (item.prices && item.tempOptions) {
-                const lbl1 = document.createElement('div'); lbl1.className = 'opt-label'; lbl1.innerText = '容量：'; mainInfo.appendChild(lbl1);
-                const grp1 = document.createElement('div'); grp1.className = 'option-group'; grp1.id = `size-${item.id}`;
+                htmlInner += `<div class="opt-label">選擇容量大小：</div><div class="option-group" id="size-${item.id}">`;
                 Object.keys(item.prices).forEach((size, idx) => {
-                    const btn = document.createElement('button'); btn.className = `opt-btn ${idx===0?'selected':''}`; btn.innerText = size;
-                    btn.onclick = function() { selectSingleBtn(btn); updateDrinkPrice(item); };
-                    grp1.appendChild(btn);
+                    htmlInner += `<button class="opt-btn ${idx===0?'selected':''}" data-val="${size}">${size}</button>`;
                 });
-                mainInfo.appendChild(grp1);
+                htmlInner += `</div>`;
                 
-                const lbl2 = document.createElement('div'); lbl2.className = 'opt-label'; lbl2.innerText = '冰熱糖度：'; mainInfo.appendChild(lbl2);
-                const grp2 = document.createElement('div'); grp2.className = 'option-group'; grp2.id = `temp-${item.id}`;
+                htmlInner += `<div class="opt-label">選擇溫度/糖度：</div><div class="option-group" id="temp-${item.id}">`;
                 item.tempOptions.forEach((t, idx) => {
-                    const btn = document.createElement('button'); btn.className = `opt-btn ${idx===0?'selected':''}`; btn.innerText = t;
-                    btn.onclick = function() { selectSingleBtn(btn); };
-                    grp2.appendChild(btn);
+                    htmlInner += `<button class="opt-btn ${idx===0?'selected':''}" data-val="${t}">${t}</button>`;
                 });
-                mainInfo.appendChild(grp2);
+                htmlInner += `</div>`;
+                let initPrice = Object.values(item.prices)[0];
+                htmlInner += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
             }
-            else if (item.typeOptions) {
-                const lbl = document.createElement('div'); lbl.className = 'opt-label'; lbl.innerText = '客製：'; mainInfo.appendChild(lbl);
-                const grp = document.createElement('div'); grp.className = 'option-group'; grp.id = `custom-${item.id}`;
-                item.typeOptions.forEach((o, i) => {
-                    const btn = document.createElement('button'); btn.className = `opt-btn ${i===0?'selected':''}`; btn.innerText = o;
-                    btn.onclick = function() { selectSingleBtn(btn); };
-                    grp.appendChild(btn);
-                });
-                mainInfo.appendChild(grp);
+            else {
+                if(item.typeOptions) {
+                    htmlInner += `<div class="opt-label">客製選項：</div><div class="option-group" id="custom-${item.id}">`;
+                    item.typeOptions.forEach((o, i) => {
+                        htmlInner += `<button class="opt-btn ${i===0?'selected':''}" data-val="${o}">${o}</button>`;
+                    });
+                    htmlInner += `</div>`;
+                }
+                htmlInner += `</div><div class="item-footer"><span class="item-price">$${item.price}</span>`;
             }
             
-            wrapper.appendChild(mainInfo);
+            wrapper.innerHTML = htmlInner;
             
-            const footer = document.createElement('div');
-            footer.className = 'item-footer';
-            
-            const priceSpan = document.createElement('span');
-            priceSpan.className = 'item-price';
-            priceSpan.id = `price-${item.id}`;
-            let initPrice = item.price || 0;
-            if (item.prices) {
-                let firstKey = item.types ? (item.hasEggOpt ? `${item.types[0]}_加蛋` : `${item.types[0]}_無蛋`) : Object.keys(item.prices)[0];
-                initPrice = item.prices[firstKey] || Object.values(item.prices)[0];
-            }
-            priceSpan.innerText = `$${initPrice}`;
-            footer.appendChild(priceSpan);
+            // 綁定動態事件與按鈕監聽
+            wrapper.querySelectorAll('.opt-btn').forEach(btn => {
+                btn.onclick = (e) => {
+                    if (btn.style.cursor === 'default') return;
+                    const p = btn.parentElement;
+                    p.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    
+                    // 根據種類更新價格顯示
+                    if (item.types && item.prices) {
+                        const typeSelected = wrapper.querySelector(`#type-${item.id} .opt-btn.selected`).textContent;
+                        const eggSelected = wrapper.querySelector(`#egg-${item.id} .opt-btn.selected`).textContent;
+                        let price = item.prices[`${typeSelected}_${eggSelected}`] || 0;
+                        wrapper.querySelector(`#price-${item.id}`).textContent = `$${price}`;
+                    } else if (item.prices && !item.tempOptions) {
+                        let price = wrapper.querySelector(`#spec-${item.id} .opt-btn.selected`).getAttribute('data-price');
+                        wrapper.querySelector(`#price-${item.id}`).textContent = `$${price}`;
+                    } else if (item.prices && item.tempOptions) {
+                        const sizeSelected = wrapper.querySelector(`#size-${item.id} .opt-btn.selected`).textContent;
+                        let price = item.prices[sizeSelected];
+                        wrapper.querySelector(`#price-${item.id}`).textContent = `$${price}`;
+                    }
+                };
+            });
             
             const addBtn = document.createElement('button');
             addBtn.className = 'add-btn';
-            addBtn.innerText = '加入購物車';
-            addBtn.onclick = function() { addToCart(item); };
-            footer.appendChild(addBtn);
+            addBtn.textContent = '加入';
+            addBtn.onclick = () => { addToCart(item.id, item.name); };
             
-            wrapper.appendChild(footer);
+            wrapper.querySelector('.item-footer').appendChild(addBtn);
             return wrapper;
         }
 
-        function selectSingleBtn(btn) {
-            const p = btn.parentElement;
-            p.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
+        function findItemById(id) {
+            for(let cat of menuData) {
+                let match = cat.items.find(i => i.id === id);
+                if(match) return match;
+            }
+            return null;
         }
 
-        function updateMainPrice(item) {
-            const typeSelected = document.getElementById(`type-${item.id}`).querySelector('.opt-btn.selected').innerText;
-            const eggSelected = document.getElementById(`egg-${item.id}`).querySelector('.opt-btn.selected').innerText;
-            let key = `${typeSelected}_${eggSelected}`;
-            let price = item.prices[key] || 0;
-            document.getElementById(`price-${item.id}`).innerText = `$${price}`;
-        }
-        
-        function updateSpecPrice(item, price) {
-            document.getElementById(`price-${item.id}`).innerText = `$${price}`;
-        }
-
-        function updateDrinkPrice(item) {
-            const sizeSelected = document.getElementById(`size-${item.id}`).querySelector('.opt-btn.selected').innerText;
-            let price = item.prices[sizeSelected];
-            document.getElementById(`price-${item.id}`).innerText = `$${price}`;
-        }
-
-        function addToCart(item) {
-            let fullName = item.name;
-            let finalPrice = item.price || 0;
+        function addToCart(id, name) {
+            let item = findItemById(id);
+            let fullName = name;
+            let finalPrice = 0;
+            const itemEl = document.getElementById(`price-${id}`) ? document.getElementById(`price-${id}`).parentElement.parentElement : null;
 
             if (item.types && item.prices) {
-                const typeS = document.getElementById(`type-${item.id}`).querySelector('.opt-btn.selected').innerText;
-                const eggS = document.getElementById(`egg-${item.id}`).querySelector('.opt-btn.selected').innerText;
-                fullName = `${typeS}-${item.name}(${eggS})`;
+                const typeS = itemEl.querySelector(`#type-${id} .opt-btn.selected`).textContent;
+                const eggS = itemEl.querySelector(`#egg-${id} .opt-btn.selected`).textContent;
+                fullName = `${typeS}-${name}(${eggS})`;
                 finalPrice = item.prices[`${typeS}_${eggS}`];
             } else if (item.prices && !item.tempOptions) {
-                const specS = document.getElementById(`spec-${item.id}`).querySelector('.opt-btn.selected').innerText;
-                fullName = `${item.name}(${specS})`;
+                const specS = itemEl.querySelector(`#spec-${id} .opt-btn.selected`).textContent;
+                fullName = `${name}(${specS})`;
                 finalPrice = item.prices[specS];
             } else if (item.prices && item.tempOptions) {
-                const sizeS = document.getElementById(`size-${item.id}`).querySelector('.opt-btn.selected').innerText;
-                const tempS = document.getElementById(`temp-${item.id}`).querySelector('.opt-btn.selected').innerText;
-                fullName = `${item.name}-${sizeS}(${tempS})`;
+                const sizeS = itemEl.querySelector(`#size-${id} .opt-btn.selected`).textContent;
+                const tempS = itemEl.querySelector(`#temp-${id} .opt-btn.selected`).textContent;
+                fullName = `${name}-${sizeS}(${tempS})`;
                 finalPrice = item.prices[sizeS];
-            } else if (item.typeOptions) {
-                const custS = document.getElementById(`custom-${item.id}`).querySelector('.opt-btn.selected').innerText;
-                fullName = `${item.name}(${custS})`;
+            } else {
+                finalPrice = item.price;
+                if(item.typeOptions && itemEl) {
+                    const custS = itemEl.querySelector(`#custom-${id} .opt-btn.selected`).textContent;
+                    fullName = `${name}(${custS})`;
+                }
             }
 
             const existing = cart.find(c => c.fullName === fullName);
@@ -447,30 +451,27 @@
             cart.forEach((item, index) => {
                 total += (item.price * item.qty);
                 cartHtml += `<div class="cart-item">
-                    <span style="font-weight:500;">${item.fullName} <b style="color:var(--primary-color);">x ${item.qty}</b></span>
-                    <span>$${item.price * item.qty} <button style="color:#e53e3e; border:none; background:none; cursor:pointer; margin-left:8px;" onclick="removeFromCart(${index})">❌</button></span>
+                    <span style="font-weight:500;">${item.fullName} <b>x ${item.qty}</b></span>
+                    <span>$${item.price * item.qty} <button style="color:#e53e3e; border:none; background:none; cursor:pointer; margin-left:8px; font-size:14px;" data-idx="${index}" class="del-cart-item">❌</button></span>
                 </div>`;
             });
             list.innerHTML = cartHtml;
             totalSpan.innerText = total;
+            
+            list.querySelectorAll('.del-cart-item').forEach(btn => {
+                btn.onclick = () => {
+                    const idx = parseInt(btn.getAttribute('data-idx'));
+                    cart.splice(idx, 1);
+                    renderCart();
+                };
+            });
         }
 
-        function removeFromCart(index) { cart.splice(index, 1); renderCart(); }
-
-        // ✨ 這是修正過、完美融合你的精美表格欄位的雲端送單機制
-        function submitOrder() {
+        // 🌟 串接 Firebase 的全新送單功能
+        async function submitOrder() {
             if(cart.length === 0) { alert('您的購物車是空的！'); return; }
             const phone = document.getElementById('user-phone').value.trim();
-            if(!phone) { alert('為了聯絡取餐，請務必填寫聯絡電話！'); return; }
-            
-            if(API_URL === "https://script.google.com/macros/s/AKfycbztfDXW-fkG0C3Xf83Uj2FYRoRtS7eqEx9Pwh5PBprdarTeQ4yUYqZcID7cb6v5hI7n/exec") {
-                alert("⚠️ 請先將 index.html 程式碼中的 API_URL 換成你的 Google Apps Script 網址喔！");
-                return;
-            }
-
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = '訂單傳送中...';
+            if(!phone) { alert('為了點餐狀態通知，請務必填寫聯絡電話！'); return; }
 
             const oDate = document.getElementById('order-date').value;
             const dtype = document.getElementById('dining-type').value;
@@ -478,48 +479,55 @@
             const note = document.getElementById('order-note').value || '無';
             const total = parseInt(document.getElementById('cart-total-price').innerText);
             
-            // 完美打包你左邊畫面的所有欄位
-            const payload = {
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "正在傳送訂單...";
+
+            // 格式化要寫入 Firebase 的點餐明細文字
+            const itemString = cart.map(c => `${c.fullName} x${c.qty}`).join(', ');
+
+            // 建立一筆要送到 Firebase 的完整訂單格式
+            const newOrder = {
                 date: oDate,
-                type: dtype,
-                tableNum: tnum,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                type: `${dtype} (${tnum})`,
                 phone: phone,
                 line: document.getElementById('user-line').value.trim() || '未填寫',
-                items: cart,
+                items: itemString, // 後台最喜歡讀取直接整理好的文字格式
                 note: note,
-                total: total
+                total: total,
+                status: '新訂單',
+                timestamp: Date.now()
             };
 
-            fetch(API_URL, {
-                method: "POST",
-                mode: "no-cors", 
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            })
-            .then(() => {
-                alert(`🎉 點餐成功！訂單已順利送往試算表與店家後台囉！`);
+            try {
+                // 🚀 推送到 Firebase Realtime Database 內的 "orders" 節點
+                const ordersRef = ref(database, 'orders');
+                const newOrderRef = push(ordersRef);
+                await set(newOrderRef, newOrder);
+                
+                alert(`🎉 訂單已成功送出！`);
                 cart = [];
+                document.getElementById('user-phone').value = '';
+                document.getElementById('user-line').value = '';
                 document.getElementById('order-note').value = '';
                 renderCart();
-            })
-            .catch(err => {
-                alert('連線失敗，請檢查網路或 API 網址設定！');
-                console.error(err);
-            })
-            .finally(() => {
+            } catch (error) {
+                console.error("Firebase 寫入失敗:", error);
+                alert("訂單送出失敗，請確認你的 Firebase 資料庫安全規則（Rules）是否已開啟讀寫。");
+            } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = '確認送出訂單';
-            });
+                submitBtn.textContent = "確認送出訂單";
+            }
         }
 
-        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        function scrollToCart() { document.getElementById('target-cart-section').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        window.scrollToTop = function() { window.scrollTo({ top: 0, behavior: 'smooth' }); };
+        window.scrollToCart = function() { document.getElementById('target-cart-section').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-        window.onload = function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('order-date').value = today;
-            initMenu();
-        };
+        // 網頁載入初始化
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('order-date').value = today;
+        initMenu();
     </script>
 </body>
 </html>
