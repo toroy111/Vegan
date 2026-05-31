@@ -123,29 +123,29 @@
         <button class="float-btn" onclick="scrollToTop()" title="回頁面頂部">🚀</button>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-        // 🌟 填入你上傳的手機截圖資料
+    <script>
+        // 1. 您的 Firebase 設定資料 (已從 image_8aed22.png 轉換)
         const firebaseConfig = {
             apiKey: "AlzaSyAgeP2a6Z-TqJaZ5F0j_2UoXVQ_WE3sckw",
-            authDomain: "jaffff-34d02.firebaseapp.com",
-            projectId: "jaffff-34d02",
-            storageBucket: "jaffff-34d02.firebasestorage.app",
+            authDomain: "jafff-34d02.firebaseapp.com",
+            projectId: "jafff-34d02",
+            storageBucket: "jafff-34d02.firebasestorage.app",
             messagingSenderId: "332430248808",
             appId: "1:332430248808:web:b81a52b4c3b15021e664dd",
-            measurementId: "G-T9YGSE9EX6",
-            databaseURL: "https://jaffff-34d02-default-rtdb.firebaseio.com" // 系統會自動對應你的 Project ID
+            measurementId: "G-TYYGSE9EX6"
         };
 
-        // 初始化 Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
+        // 2. 初始化 Firebase 與 Database
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
+        // 原有的菜單資料
         const menuData = [
             {
-                category: " Sandwich 主食系列 (吐司 / 漢堡 / 潛艇堡)",
+                category: "🥪 主食系列 (吐司 / 漢堡 / 潛艇堡)",
                 items: [
                     { id: "m_01", name: "煎蛋", types: ["白/全麥吐司", "漢堡", "潛艇堡"], prices: { "白/全麥吐司_無蛋": 30, "漢堡_無蛋": 30, "潛艇堡_無蛋": 40 } },
                     { id: "m_02", name: "鮮蔬", types: ["白/全麥吐司", "漢堡", "潛艇堡"], hasEggOpt: true, prices: { "白/全麥吐司_加蛋": 40, "白/全麥吐司_無蛋": 25, "漢堡_加蛋": 40, "漢堡_無蛋": 25, "潛艇堡_加蛋": 50, "潛艇堡_無蛋": 35 } },
@@ -259,7 +259,7 @@
                     { id: "d_07", name: "鴛鴦奶茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小杯400cc": 20, "中杯500cc": 30, "大杯700cc": 40 } },
                     { id: "d_08", name: "咖啡", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 20, "中杯500cc": 30, "大杯700cc": 40 } },
                     { id: "d_09", name: "鮮奶咖啡", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 30, "中杯500cc": 40, "大杯700cc": 50 } },
-                    { id: "d_10", name: "豆乳咖啡", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 30, "中杯500cc": 40, "大杯700cc": 50 } },
+                    { id: "d_10", name: "豆乳咖啡", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 30, "甘杯500cc": 40, "大杯700cc": 50 } },
                     { id: "d_11", name: "鮮蜜豆奶", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 30, "中杯500cc": 40, "大杯700cc": 50 } },
                     { id: "d_12", name: "奶油濃湯", price: 35 },
                     { id: "d_13", name: "蔬菜湯", price: 35 }
@@ -269,29 +269,22 @@
 
         let cart = [];
 
+        // 初始化菜單選單 (保持不變)
         function initMenu() {
             const container = document.getElementById('accordion-container');
             container.innerHTML = '';
-
             menuData.forEach((catGroup, catIdx) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'accordion-item'; 
-                
                 const header = document.createElement('div');
                 header.className = 'accordion-header';
                 header.innerText = catGroup.category;
                 header.onclick = () => { itemDiv.classList.toggle('active'); };
-                
                 const content = document.createElement('div');
                 content.className = 'accordion-content';
-                
                 const grid = document.createElement('div');
                 grid.className = 'menu-grid';
-                
-                catGroup.items.forEach(item => {
-                    grid.appendChild(renderMenuItemHtml(item));
-                });
-                
+                catGroup.items.forEach(item => { grid.innerHTML += renderMenuItemHtml(item); });
                 content.appendChild(grid);
                 itemDiv.appendChild(header);
                 itemDiv.appendChild(content);
@@ -299,102 +292,80 @@
             });
         }
 
+        // 渲染 HTML 結構 (保持不變)
         function renderMenuItemHtml(item) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'menu-item';
-            
-            let htmlInner = `<div><div class="item-name">${item.name}</div>`;
-            
+            let html = `<div class="menu-item"><div><div class="item-name">${item.name}</div>`;
             if (item.types && item.prices) {
-                htmlInner += `<div class="opt-label">選擇主食種類：</div><div class="option-group" id="type-${item.id}">`;
-                item.types.forEach((t, i) => {
-                    htmlInner += `<button class="opt-btn ${i===0?'selected':''}" data-val="${t}">${t}</button>`;
-                });
-                htmlInner += `</div>`;
-                
+                html += `<div class="opt-label">選擇主食種類：</div><div class="option-group" id="type-${item.id}">`;
+                item.types.forEach((t, i) => { html += `<button class="opt-btn ${i===0?'selected':''}" onclick="updateMainPrice('${item.id}', this)">${t}</button>`; });
+                html += `</div>`;
                 if (item.hasEggOpt) {
-                    htmlInner += `<div class="opt-label">加蛋/無蛋選單：</div><div class="option-group" id="egg-${item.id}">
-                        <button class="opt-btn selected" data-val="加蛋">加蛋</button>
-                        <button class="opt-btn" data-val="無蛋">無蛋</button>
+                    html += `<div class="opt-label">加蛋/無蛋選單：</div><div class="option-group" id="egg-${item.id}">
+                        <button class="opt-btn selected" onclick="updateMainPrice('${item.id}', this)">加蛋</button>
+                        <button class="opt-btn" onclick="updateMainPrice('${item.id}', this)">無蛋</button>
                     </div>`;
                 } else {
-                    htmlInner += `<div class="opt-label">固定配方：</div><div class="option-group" id="egg-${item.id}">
+                    html += `<div class="opt-label">固定配方：</div><div class="option-group" id="egg-${item.id}">
                         <button class="opt-btn selected" style="cursor:default" onclick="return false;">無蛋</button>
                     </div>`;
                 }
                 let firstKey = item.hasEggOpt ? `${item.types[0]}_加蛋` : `${item.types[0]}_無蛋`;
                 let initPrice = item.prices[firstKey] || 30;
-                htmlInner += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
-            }
-            else if (item.prices && !item.tempOptions) {
-                htmlInner += `<div class="opt-label">選擇規格：</div><div class="option-group" id="spec-${item.id}">`;
-                Object.keys(item.prices).forEach((spec, idx) => {
-                    htmlInner += `<button class="opt-btn ${idx===0?'selected':''}" data-val="${spec}" data-price="${item.prices[spec]}">${spec}</button>`;
-                });
-                htmlInner += `</div>`;
+                html += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
+            } else if (item.prices && !item.tempOptions) {
+                html += `<div class="opt-label">選擇規格：</div><div class="option-group" id="spec-${item.id}">`;
+                Object.keys(item.prices).forEach((spec, idx) => { html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="updateSpecPrice('${item.id}', ${item.prices[spec]}, this)">${spec}</button>`; });
+                html += `</div>`;
                 let initPrice = Object.values(item.prices)[0];
-                htmlInner += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
-            }
-            else if (item.prices && item.tempOptions) {
-                htmlInner += `<div class="opt-label">選擇容量大小：</div><div class="option-group" id="size-${item.id}">`;
-                Object.keys(item.prices).forEach((size, idx) => {
-                    htmlInner += `<button class="opt-btn ${idx===0?'selected':''}" data-val="${size}">${size}</button>`;
-                });
-                htmlInner += `</div>`;
-                
-                htmlInner += `<div class="opt-label">選擇溫度/糖度：</div><div class="option-group" id="temp-${item.id}">`;
-                item.tempOptions.forEach((t, idx) => {
-                    htmlInner += `<button class="opt-btn ${idx===0?'selected':''}" data-val="${t}">${t}</button>`;
-                });
-                htmlInner += `</div>`;
+                html += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
+            } else if (item.prices && item.tempOptions) {
+                html += `<div class="opt-label">選擇容量大小：</div><div class="option-group" id="size-${item.id}">`;
+                Object.keys(item.prices).forEach((size, idx) => { html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="updateDrinkPrice('${item.id}', this)">${size}</button>`; });
+                html += `</div>`;
+                html += `<div class="opt-label">選擇溫度/糖度：</div><div class="option-group" id="temp-${item.id}">`;
+                item.tempOptions.forEach((t, idx) => { html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="selectSingleBtn(this)">${t}</button>`; });
+                html += `</div>`;
                 let initPrice = Object.values(item.prices)[0];
-                htmlInner += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
-            }
-            else {
+                html += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
+            } else {
                 if(item.typeOptions) {
-                    htmlInner += `<div class="opt-label">客製選項：</div><div class="option-group" id="custom-${item.id}">`;
-                    item.typeOptions.forEach((o, i) => {
-                        htmlInner += `<button class="opt-btn ${i===0?'selected':''}" data-val="${o}">${o}</button>`;
-                    });
-                    htmlInner += `</div>`;
+                    html += `<div class="opt-label">客製選項：</div><div class="option-group" id="custom-${item.id}">`;
+                    item.typeOptions.forEach((o, i) => { html += `<button class="opt-btn ${i===0?'selected':''}" onclick="selectSingleBtn(this)">${o}</button>`; });
+                    html += `</div>`;
                 }
-                htmlInner += `</div><div class="item-footer"><span class="item-price">$${item.price}</span>`;
+                html += `</div><div class="item-footer"><span class="item-price">$${item.price}</span>`;
             }
-            
-            wrapper.innerHTML = htmlInner;
-            
-            // 綁定動態事件與按鈕監聽
-            wrapper.querySelectorAll('.opt-btn').forEach(btn => {
-                btn.onclick = (e) => {
-                    if (btn.style.cursor === 'default') return;
-                    const p = btn.parentElement;
-                    p.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    
-                    // 根據種類更新價格顯示
-                    if (item.types && item.prices) {
-                        const typeSelected = wrapper.querySelector(`#type-${item.id} .opt-btn.selected`).textContent;
-                        const eggSelected = wrapper.querySelector(`#egg-${item.id} .opt-btn.selected`).textContent;
-                        let price = item.prices[`${typeSelected}_${eggSelected}`] || 0;
-                        wrapper.querySelector(`#price-${item.id}`).textContent = `$${price}`;
-                    } else if (item.prices && !item.tempOptions) {
-                        let price = wrapper.querySelector(`#spec-${item.id} .opt-btn.selected`).getAttribute('data-price');
-                        wrapper.querySelector(`#price-${item.id}`).textContent = `$${price}`;
-                    } else if (item.prices && item.tempOptions) {
-                        const sizeSelected = wrapper.querySelector(`#size-${item.id} .opt-btn.selected`).textContent;
-                        let price = item.prices[sizeSelected];
-                        wrapper.querySelector(`#price-${item.id}`).textContent = `$${price}`;
-                    }
-                };
-            });
-            
-            const addBtn = document.createElement('button');
-            addBtn.className = 'add-btn';
-            addBtn.textContent = '加入';
-            addBtn.onclick = () => { addToCart(item.id, item.name); };
-            
-            wrapper.querySelector('.item-footer').appendChild(addBtn);
-            return wrapper;
+            html += `<button class="add-btn" onclick="addToCart('${item.id}', '${item.name}')">加入</button></div></div>`;
+            return html;
+        }
+
+        function selectSingleBtn(btn) {
+            const p = btn.parentElement;
+            p.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        function updateMainPrice(id, clickedBtn) {
+            if(clickedBtn) { selectSingleBtn(clickedBtn); }
+            let item = findItemById(id);
+            const typeSelected = document.getElementById(`type-${id}`).querySelector('.opt-btn.selected').innerText;
+            const eggSelected = document.getElementById(`egg-${id}`).querySelector('.opt-btn.selected').innerText;
+            let key = `${typeSelected}_${eggSelected}`;
+            let price = item.prices[key] || 0;
+            document.getElementById(`price-${id}`).innerText = `$${price}`;
+        }
+        
+        function updateSpecPrice(id, price, clickedBtn) {
+            if(clickedBtn) { selectSingleBtn(clickedBtn); }
+            document.getElementById(`price-${id}`).innerText = `$${price}`;
+        }
+
+        function updateDrinkPrice(id, clickedBtn) {
+            if(clickedBtn) { selectSingleBtn(clickedBtn); }
+            let item = findItemById(id);
+            const sizeSelected = document.getElementById(`size-${id}`).querySelector('.opt-btn.selected').innerText;
+            let price = item.prices[sizeSelected];
+            document.getElementById(`price-${id}`).innerText = `$${price}`;
         }
 
         function findItemById(id) {
@@ -409,26 +380,25 @@
             let item = findItemById(id);
             let fullName = name;
             let finalPrice = 0;
-            const itemEl = document.getElementById(`price-${id}`) ? document.getElementById(`price-${id}`).parentElement.parentElement : null;
 
             if (item.types && item.prices) {
-                const typeS = itemEl.querySelector(`#type-${id} .opt-btn.selected`).textContent;
-                const eggS = itemEl.querySelector(`#egg-${id} .opt-btn.selected`).textContent;
+                const typeS = document.getElementById(`type-${id}`).querySelector('.opt-btn.selected').innerText;
+                const eggS = document.getElementById(`egg-${id}`).querySelector('.opt-btn.selected').innerText;
                 fullName = `${typeS}-${name}(${eggS})`;
                 finalPrice = item.prices[`${typeS}_${eggS}`];
             } else if (item.prices && !item.tempOptions) {
-                const specS = itemEl.querySelector(`#spec-${id} .opt-btn.selected`).textContent;
+                const specS = document.getElementById(`spec-${id}`).querySelector('.opt-btn.selected').innerText;
                 fullName = `${name}(${specS})`;
                 finalPrice = item.prices[specS];
             } else if (item.prices && item.tempOptions) {
-                const sizeS = itemEl.querySelector(`#size-${id} .opt-btn.selected`).textContent;
-                const tempS = itemEl.querySelector(`#temp-${id} .opt-btn.selected`).textContent;
+                const sizeS = document.getElementById(`size-${id}`).querySelector('.opt-btn.selected').innerText;
+                const tempS = document.getElementById(`temp-${id}`).querySelector('.opt-btn.selected').innerText;
                 fullName = `${name}-${sizeS}(${tempS})`;
                 finalPrice = item.prices[sizeS];
             } else {
                 finalPrice = item.price;
-                if(item.typeOptions && itemEl) {
-                    const custS = itemEl.querySelector(`#custom-${id} .opt-btn.selected`).textContent;
+                if(item.typeOptions) {
+                    const custS = document.getElementById(`custom-${id}`).querySelector('.opt-btn.selected').innerText;
                     fullName = `${name}(${custS})`;
                 }
             }
@@ -452,23 +422,18 @@
                 total += (item.price * item.qty);
                 cartHtml += `<div class="cart-item">
                     <span style="font-weight:500;">${item.fullName} <b>x ${item.qty}</b></span>
-                    <span>$${item.price * item.qty} <button style="color:#e53e3e; border:none; background:none; cursor:pointer; margin-left:8px; font-size:14px;" data-idx="${index}" class="del-cart-item">❌</button></span>
+                    <span>$${item.price * item.qty} <button style="color:#e53e3e; border:none; background:none; cursor:pointer; margin-left:8px; font-size:14px;" onclick="removeFromCart(${index})">❌</button></span>
                 </div>`;
             });
             list.innerHTML = cartHtml;
             totalSpan.innerText = total;
-            
-            list.querySelectorAll('.del-cart-item').forEach(btn => {
-                btn.onclick = () => {
-                    const idx = parseInt(btn.getAttribute('data-idx'));
-                    cart.splice(idx, 1);
-                    renderCart();
-                };
-            });
         }
 
-        // 🌟 串接 Firebase 的全新送單功能
-        async function submitOrder() {
+        function removeFromCart(index) { cart.splice(index, 1); renderCart(); }
+
+
+        // 3. ✨ 重頭戲：改寫後的 submitOrder 函式 ✨
+        function submitOrder() {
             if(cart.length === 0) { alert('您的購物車是空的！'); return; }
             const phone = document.getElementById('user-phone').value.trim();
             if(!phone) { alert('為了點餐狀態通知，請務必填寫聯絡電話！'); return; }
@@ -479,55 +444,58 @@
             const note = document.getElementById('order-note').value || '無';
             const total = parseInt(document.getElementById('cart-total-price').innerText);
             
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "正在傳送訂單...";
+            // 生成隨機或時間序列的訂單序號
+            let currentId = parseInt(localStorage.getItem('jlh_order_id_counter')) || 1001;
 
-            // 格式化要寫入 Firebase 的點餐明細文字
-            const itemString = cart.map(c => `${c.fullName} x${c.qty}`).join(', ');
-
-            // 建立一筆要送到 Firebase 的完整訂單格式
             const newOrder = {
+                id: currentId,
                 date: oDate,
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 type: `${dtype} (${tnum})`,
                 phone: phone,
                 line: document.getElementById('user-line').value.trim() || '未填寫',
-                items: itemString, // 後台最喜歡讀取直接整理好的文字格式
+                items: [...cart],
                 note: note,
                 total: total,
                 status: '新訂單',
-                timestamp: Date.now()
+                createdAt: firebase.database.ServerValue.TIMESTAMP // 新增：後台排序與即時提示所需的時戳
             };
 
-            try {
-                // 🚀 推送到 Firebase Realtime Database 內的 "orders" 節點
-                const ordersRef = ref(database, 'orders');
-                const newOrderRef = push(ordersRef);
-                await set(newOrderRef, newOrder);
+            // 🚀 改為直接寫入 Firebase Realtime Database 中的 "orders" 節點
+            database.ref('orders').push(newOrder)
+            .then(() => {
+                // 資料寫入成功後才執行的邏輯
+                alert(`🎉 訂單 #${currentId} 已成功傳送到雲端資料庫！`);
                 
-                alert(`🎉 訂單已成功送出！`);
+                // 本地流水號遞增
+                localStorage.setItem('jlh_order_id_counter', currentId + 1);
+                
+                // 清空購物車與輸入欄位
                 cart = [];
                 document.getElementById('user-phone').value = '';
                 document.getElementById('user-line').value = '';
                 document.getElementById('order-note').value = '';
                 renderCart();
-            } catch (error) {
+            })
+            .catch((error) => {
+                // 錯誤處理
                 console.error("Firebase 寫入失敗:", error);
-                alert("訂單送出失敗，請確認你的 Firebase 資料庫安全規則（Rules）是否已開啟讀寫。");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = "確認送出訂單";
-            }
+                alert("❌ 訂單傳送失敗，請確認網路連線或檢查 Firebase 規則設定。");
+            });
         }
 
-        window.scrollToTop = function() { window.scrollTo({ top: 0, behavior: 'smooth' }); };
-        window.scrollToCart = function() { document.getElementById('target-cart-section').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+        /* 滑動定位控制函式 */
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function scrollToCart() {
+            const cartSec = document.getElementById('target-cart-section');
+            cartSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
 
-        // 網頁載入初始化
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('order-date').value = today;
-        initMenu();
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('order-date').value = today;
+            initMenu();
+        };
     </script>
 </body>
 </html>
