@@ -56,13 +56,6 @@
         .input-field { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; }
         .flex-inputs { display: flex; gap: 8px; margin-bottom: 4px; }
         label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #4a5568; }
-
-        /* 右下角浮動快捷鍵 */
-        .float-buttons { position: fixed; bottom: 25px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
-        .float-btn { width: 45px; height: 45px; border-radius: 50%; border: none; background-color: rgba(44, 62, 80, 0.85); color: white; font-size: 18px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: 0.3s; }
-        .float-btn:hover { background-color: var(--primary-color); transform: scale(1.05); }
-        .float-cart-btn { background-color: rgba(230, 126, 34, 0.9); }
-        .float-cart-btn:hover { background-color: #d35400; }
     </style>
 </head>
 <body>
@@ -79,33 +72,33 @@
                 <div id="accordion-container"></div>
             </div>
             
-            <div class="cart-section" id="target-cart-section">
+            <div class="cart-section">
                 <h3>🛒 我的購物車</h3>
                 <div style="margin: 15px 0 10px 0;">
-                    <label for="order-date">📅 取餐日期：</label>
+                    <label>📅 取餐日期：</label>
                     <input type="date" id="order-date" class="input-field">
                     
                     <div class="flex-inputs">
                         <div style="width: 45%;">
-                            <label for="dining-type">🍽️ 方式：</label>
+                            <label>🍽️ 方式：</label>
                             <select id="dining-type" class="input-field">
                                 <option value="外帶">外帶</option>
                                 <option value="內用">內用</option>
                             </select>
                         </div>
                         <div style="width: 55%;">
-                            <label for="table-num">👤 桌號/姓名：</label>
+                            <label>👤 桌號/姓名：</label>
                             <input type="text" id="table-num" placeholder="桌號或填取餐人" class="input-field">
                         </div>
                     </div>
 
-                    <label for="user-phone">📞 聯絡電話 (必填)：</label>
+                    <label>📞 聯絡電話 (必填)：</label>
                     <input type="tel" id="user-phone" placeholder="填寫聯絡手機" class="input-field" required>
 
-                    <label {id="user-line-label"} for="user-line">💬 LINE ID (選填)：</label>
+                    <label>💬 LINE ID (選填)：</label>
                     <input type="text" id="user-line" placeholder="方便聯絡通知" class="input-field">
                     
-                    <label for="order-note">✍️ 訂單備註：</label>
+                    <label>✍️ 訂單備註：</label>
                     <textarea id="order-note" class="input-field" placeholder="如有其他特殊客製要求請寫在這邊" style="height: 55px; resize: none;"></textarea>
                 </div>
                 <hr style="border: none; border-top: 1px solid #edf2f7;">
@@ -113,36 +106,13 @@
                     <p style="color: #a0aec0; text-align: center; padding: 20px 0;">購物車目前空空如也</p>
                 </div>
                 <div class="cart-total">總金額: $<span id="cart-total-price">0</span></div>
-                <button class="submit-order-btn" id="submit-btn" onclick="submitOrder()">確認送出訂單</button>
+                <button class="submit-order-btn" onclick="submitOrder()">確認送出訂單</button>
             </div>
         </div>
     </div>
 
-    <div class="float-buttons">
-        <button class="float-btn float-cart-btn" onclick="scrollToCart()" title="直達購物車填單">📋</button>
-        <button class="float-btn" onclick="scrollToTop()" title="回頁面頂部">🚀</button>
-    </div>
-
-   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
     <script>
-        // 1. 您的 Firebase 設定資料 (已從 image_8aed22.png 轉換)
-        const firebaseConfig = {
-            apiKey: "AlzaSyAgeP2a6Z-TqJaZ5F0j_2UoXVQ_WE3sckw",
-            authDomain: "jafff-34d02.firebaseapp.com",
-            projectId: "jafff-34d02",
-            storageBucket: "jafff-34d02.firebasestorage.app",
-            messagingSenderId: "332430248808",
-            appId: "1:332430248808:web:b81a52b4c3b15021e664dd",
-            measurementId: "G-TYYGSE9EX6"
-        };
-
-        // 2. 初始化 Firebase 與 Database
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // 原有的菜單資料
+        // 依照5張圖片重新完整分類錄入的菜單資料
         const menuData = [
             {
                 category: "🥪 主食系列 (吐司 / 漢堡 / 潛艇堡)",
@@ -248,7 +218,7 @@
                 ]
             },
             {
-                category: "🥤 特調冷熱飲品 / 溫慢湯品",
+                category: "🥤 特調冷熱飲品 / 溫暖湯品",
                 items: [
                     { id: "d_01", name: "紅茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小杯400cc": 15, "中杯500cc": 20, "大杯700cc": 30 } },
                     { id: "d_02", name: "奶茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小杯400cc": 15, "中杯500cc": 20, "大杯700cc": 30 } },
@@ -259,7 +229,7 @@
                     { id: "d_07", name: "鴛鴦奶茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小杯400cc": 20, "中杯500cc": 30, "大杯700cc": 40 } },
                     { id: "d_08", name: "咖啡", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 20, "中杯500cc": 30, "大杯700cc": 40 } },
                     { id: "d_09", name: "鮮奶咖啡", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 30, "中杯500cc": 40, "大杯700cc": 50 } },
-                    { id: "d_10", name: "豆乳咖啡", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 30, "甘杯500cc": 40, "大杯700cc": 50 } },
+                    { id: "d_10", name: "豆乳咖啡", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 30, "中杯500cc": 40, "大杯700cc": 50 } },
                     { id: "d_11", name: "鮮蜜豆奶", tempOptions: ["半糖冰","半糖涼","半糖溫","半糖熱","無糖冰","無糖涼","無糖溫","無糖熱"], prices: { "小杯400cc": 30, "中杯500cc": 40, "大杯700cc": 50 } },
                     { id: "d_12", name: "奶油濃湯", price: 35 },
                     { id: "d_13", name: "蔬菜湯", price: 35 }
@@ -269,22 +239,29 @@
 
         let cart = [];
 
-        // 初始化菜單選單 (保持不變)
         function initMenu() {
             const container = document.getElementById('accordion-container');
             container.innerHTML = '';
+
             menuData.forEach((catGroup, catIdx) => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = 'accordion-item'; 
+                itemDiv.className = `accordion-item ${catIdx === 0 ? 'active' : ''}`; // 預設展開第一個
+                
                 const header = document.createElement('div');
                 header.className = 'accordion-header';
                 header.innerText = catGroup.category;
                 header.onclick = () => { itemDiv.classList.toggle('active'); };
+                
                 const content = document.createElement('div');
                 content.className = 'accordion-content';
+                
                 const grid = document.createElement('div');
                 grid.className = 'menu-grid';
-                catGroup.items.forEach(item => { grid.innerHTML += renderMenuItemHtml(item); });
+                
+                catGroup.items.forEach(item => {
+                    grid.innerHTML += renderMenuItemHtml(item);
+                });
+                
                 content.appendChild(grid);
                 itemDiv.appendChild(header);
                 itemDiv.appendChild(content);
@@ -292,61 +269,81 @@
             });
         }
 
-        // 渲染 HTML 結構 (保持不變)
         function renderMenuItemHtml(item) {
             let html = `<div class="menu-item"><div><div class="item-name">${item.name}</div>`;
+            
+            // 情況一：主食系列 (需要選擇 種類 與 是否加蛋)
             if (item.types && item.prices) {
                 html += `<div class="opt-label">選擇主食種類：</div><div class="option-group" id="type-${item.id}">`;
-                item.types.forEach((t, i) => { html += `<button class="opt-btn ${i===0?'selected':''}" onclick="updateMainPrice('${item.id}', this)">${t}</button>`; });
+                item.types.forEach((t, i) => {
+                    html += `<button class="opt-btn ${i===0?'selected':''}" onclick="updateMainPrice('${item.id}')">${t}</button>`;
+                });
                 html += `</div>`;
+                
                 if (item.hasEggOpt) {
                     html += `<div class="opt-label">加蛋/無蛋選單：</div><div class="option-group" id="egg-${item.id}">
-                        <button class="opt-btn selected" onclick="updateMainPrice('${item.id}', this)">加蛋</button>
-                        <button class="opt-btn" onclick="updateMainPrice('${item.id}', this)">無蛋</button>
+                        <button class="opt-btn selected" onclick="updateMainPrice('${item.id}')">加蛋</button>
+                        <button class="opt-btn" onclick="updateMainPrice('${item.id}')">無蛋</button>
                     </div>`;
                 } else {
                     html += `<div class="opt-label">固定配方：</div><div class="option-group" id="egg-${item.id}">
-                        <button class="opt-btn selected" style="cursor:default" onclick="return false;">無蛋</button>
+                        <button class="opt-btn selected" style="cursor:default">無蛋</button>
                     </div>`;
                 }
                 let firstKey = item.hasEggOpt ? `${item.types[0]}_加蛋` : `${item.types[0]}_無蛋`;
                 let initPrice = item.prices[firstKey] || 30;
                 html += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
-            } else if (item.prices && !item.tempOptions) {
+            }
+            // 情況二：蛋餅 / 抓餅 與 果醬吐司 與 麵食
+            else if (item.prices && !item.tempOptions) {
                 html += `<div class="opt-label">選擇規格：</div><div class="option-group" id="spec-${item.id}">`;
-                Object.keys(item.prices).forEach((spec, idx) => { html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="updateSpecPrice('${item.id}', ${item.prices[spec]}, this)">${spec}</button>`; });
+                Object.keys(item.prices).forEach((spec, idx) => {
+                    html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="updateSpecPrice('${item.id}', ${item.prices[spec]})">${spec}</button>`;
+                });
                 html += `</div>`;
                 let initPrice = Object.values(item.prices)[0];
                 html += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
-            } else if (item.prices && item.tempOptions) {
+            }
+            // 情況三：冷熱飲料有大小杯與溫度
+            else if (item.prices && item.tempOptions) {
                 html += `<div class="opt-label">選擇容量大小：</div><div class="option-group" id="size-${item.id}">`;
-                Object.keys(item.prices).forEach((size, idx) => { html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="updateDrinkPrice('${item.id}', this)">${size}</button>`; });
+                Object.keys(item.prices).forEach((size, idx) => {
+                    html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="updateDrinkPrice('${item.id}')">${size}</button>`;
+                });
                 html += `</div>`;
+                
                 html += `<div class="opt-label">選擇溫度/糖度：</div><div class="option-group" id="temp-${item.id}">`;
-                item.tempOptions.forEach((t, idx) => { html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="selectSingleBtn(this)">${t}</button>`; });
+                item.tempOptions.forEach((t, idx) => {
+                    html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="selectSingleBtn(this)">${t}</button>`;
+                });
                 html += `</div>`;
                 let initPrice = Object.values(item.prices)[0];
                 html += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
-            } else {
+            }
+            // 情況四：一般小吃單點
+            else {
                 if(item.typeOptions) {
                     html += `<div class="opt-label">客製選項：</div><div class="option-group" id="custom-${item.id}">`;
-                    item.typeOptions.forEach((o, i) => { html += `<button class="opt-btn ${i===0?'selected':''}" onclick="selectSingleBtn(this)">${o}</button>`; });
+                    item.typeOptions.forEach((o, i) => {
+                        html += `<button class="opt-btn ${i===0?'selected':''}" onclick="selectSingleBtn(this)">${o}</button>`;
+                    });
                     html += `</div>`;
                 }
                 html += `</div><div class="item-footer"><span class="item-price">$${item.price}</span>`;
             }
+            
             html += `<button class="add-btn" onclick="addToCart('${item.id}', '${item.name}')">加入</button></div></div>`;
             return html;
         }
 
+        // 單選按鈕切換輔助
         function selectSingleBtn(btn) {
             const p = btn.parentElement;
             p.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
         }
 
-        function updateMainPrice(id, clickedBtn) {
-            if(clickedBtn) { selectSingleBtn(clickedBtn); }
+        function updateMainPrice(id) {
             let item = findItemById(id);
             const typeSelected = document.getElementById(`type-${id}`).querySelector('.opt-btn.selected').innerText;
             const eggSelected = document.getElementById(`egg-${id}`).querySelector('.opt-btn.selected').innerText;
@@ -355,13 +352,14 @@
             document.getElementById(`price-${id}`).innerText = `$${price}`;
         }
         
-        function updateSpecPrice(id, price, clickedBtn) {
-            if(clickedBtn) { selectSingleBtn(clickedBtn); }
+        function updateSpecPrice(id, price) {
+            event.target.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+            event.target.classList.add('selected');
             document.getElementById(`price-${id}`).innerText = `$${price}`;
         }
 
-        function updateDrinkPrice(id, clickedBtn) {
-            if(clickedBtn) { selectSingleBtn(clickedBtn); }
+        function updateDrinkPrice(id) {
+            selectSingleBtn(event.target);
             let item = findItemById(id);
             const sizeSelected = document.getElementById(`size-${id}`).querySelector('.opt-btn.selected').innerText;
             let price = item.prices[sizeSelected];
@@ -381,6 +379,7 @@
             let fullName = name;
             let finalPrice = 0;
 
+            // 抓取各區組裝名稱與計算價格
             if (item.types && item.prices) {
                 const typeS = document.getElementById(`type-${id}`).querySelector('.opt-btn.selected').innerText;
                 const eggS = document.getElementById(`egg-${id}`).querySelector('.opt-btn.selected').innerText;
@@ -431,8 +430,6 @@
 
         function removeFromCart(index) { cart.splice(index, 1); renderCart(); }
 
-
-        // 3. ✨ 重頭戲：改寫後的 submitOrder 函式 ✨
         function submitOrder() {
             if(cart.length === 0) { alert('您的購物車是空的！'); return; }
             const phone = document.getElementById('user-phone').value.trim();
@@ -444,7 +441,7 @@
             const note = document.getElementById('order-note').value || '無';
             const total = parseInt(document.getElementById('cart-total-price').innerText);
             
-            // 生成隨機或時間序列的訂單序號
+            let localOrders = JSON.parse(localStorage.getItem('jlh_orders')) || [];
             let currentId = parseInt(localStorage.getItem('jlh_order_id_counter')) || 1001;
 
             const newOrder = {
@@ -457,44 +454,43 @@
                 items: [...cart],
                 note: note,
                 total: total,
-                status: '新訂單',
-                createdAt: firebase.database.ServerValue.TIMESTAMP // 新增：後台排序與即時提示所需的時戳
+                status: '新訂單'
             };
 
-            // 🚀 改為直接寫入 Firebase Realtime Database 中的 "orders" 節點
-            database.ref('orders').push(newOrder)
-            .then(() => {
-                // 資料寫入成功後才執行的邏輯
-                alert(`🎉 訂單 #${currentId} 已成功傳送到雲端資料庫！`);
-                
-                // 本地流水號遞增
-                localStorage.setItem('jlh_order_id_counter', currentId + 1);
-                
-                // 清空購物車與輸入欄位
-                cart = [];
-                document.getElementById('user-phone').value = '';
-                document.getElementById('user-line').value = '';
-                document.getElementById('order-note').value = '';
-                renderCart();
-            })
-            .catch((error) => {
-                // 錯誤處理
-                console.error("Firebase 寫入失敗:", error);
-                alert("❌ 訂單傳送失敗，請確認網路連線或檢查 Firebase 規則設定。");
-            });
-        }
+           push(
+  ref(db, "orders"),
+  newOrder
+)
+.then(() => {
 
-        /* 滑動定位控制函式 */
-        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        function scrollToCart() {
-            const cartSec = document.getElementById('target-cart-section');
-            cartSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+   alert(
+     `🎉 訂單 #${currentId} 已成功送出！`
+   );
+
+})
+.catch(error => {
+
+   alert("送單失敗");
+
+   console.log(error);
+
+});
+            
+            alert(`🎉 訂單 #${currentId} 已成功送出！`);
+            cart = [];
+            document.getElementById('user-phone').value = '';
+            document.getElementById('user-line').value = '';
+            document.getElementById('order-note').value = '';
+            renderCart();
         }
 
         window.onload = function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('order-date').value = today;
             initMenu();
+            
+            // 監聽按鈕點擊更新主食價格
+            window.updateMainPrice = updateMainPrice;
         };
     </script>
 </body>
