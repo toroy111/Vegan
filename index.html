@@ -56,7 +56,46 @@
         .input-field { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; }
         .flex-inputs { display: flex; gap: 8px; margin-bottom: 4px; }
         label { font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #4a5568; }
+
+        /* 右下角浮動快捷鍵 */
+        .float-buttons { position: fixed; bottom: 25px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
+        .float-btn { width: 45px; height: 45px; border-radius: 50%; border: none; background-color: rgba(44, 62, 80, 0.85); color: white; font-size: 18px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: 0.3s; }
+        .float-btn:hover { background-color: var(--primary-color); transform: scale(1.05); }
+        .float-cart-btn { background-color: rgba(230, 126, 34, 0.9); }
+        .float-cart-btn:hover { background-color: #d35400; }
     </style>
+    <script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getDatabase,
+  ref,
+  push,
+  set
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAgeP2a6Z-TqJaZ5F0j_2UoXVQ_WE3sckw",
+  authDomain: "jaffff-34d02.firebaseapp.com",
+  databaseURL: "這裡要放你的Realtime Database網址",
+  projectId: "jaffff-34d02",
+  storageBucket: "jaffff-34d02.firebasestorage.app",
+  messagingSenderId: "332430248808",
+  appId: "1:332430248808:web:b81a52b4c3b15021e664dd",
+  measurementId: "G-T9YGSE9EX6"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+window.db = db;
+window.ref = ref;
+window.push = push;
+window.set = set;
+
+</script>
 </head>
 <body>
 
@@ -72,7 +111,7 @@
                 <div id="accordion-container"></div>
             </div>
             
-            <div class="cart-section">
+            <div class="cart-section" id="target-cart-section">
                 <h3>🛒 我的購物車</h3>
                 <div style="margin: 15px 0 10px 0;">
                     <label>📅 取餐日期：</label>
@@ -111,8 +150,12 @@
         </div>
     </div>
 
+    <div class="float-buttons">
+        <button class="float-btn float-cart-btn" onclick="scrollToCart()" title="直達購物車填單">📋</button>
+        <button class="float-btn" onclick="scrollToTop()" title="回頁面頂部">🚀</button>
+    </div>
+
     <script>
-        // 依照5張圖片重新完整分類錄入的菜單資料
         const menuData = [
             {
                 category: "🥪 主食系列 (吐司 / 漢堡 / 潛艇堡)",
@@ -218,7 +261,7 @@
                 ]
             },
             {
-                category: "🥤 特調冷熱飲品 / 溫暖湯品",
+                category: "🥤 特調冷熱飲品 / 溫慢湯品",
                 items: [
                     { id: "d_01", name: "紅茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小杯400cc": 15, "中杯500cc": 20, "大杯700cc": 30 } },
                     { id: "d_02", name: "奶茶", tempOptions: ["冰","涼","溫","熱"], prices: { "小杯400cc": 15, "中杯500cc": 20, "大杯700cc": 30 } },
@@ -245,7 +288,7 @@
 
             menuData.forEach((catGroup, catIdx) => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = `accordion-item ${catIdx === 0 ? 'active' : ''}`; // 預設展開第一個
+                itemDiv.className = 'accordion-item'; 
                 
                 const header = document.createElement('div');
                 header.className = 'accordion-header';
@@ -272,43 +315,40 @@
         function renderMenuItemHtml(item) {
             let html = `<div class="menu-item"><div><div class="item-name">${item.name}</div>`;
             
-            // 情況一：主食系列 (需要選擇 種類 與 是否加蛋)
             if (item.types && item.prices) {
                 html += `<div class="opt-label">選擇主食種類：</div><div class="option-group" id="type-${item.id}">`;
                 item.types.forEach((t, i) => {
-                    html += `<button class="opt-btn ${i===0?'selected':''}" onclick="updateMainPrice('${item.id}')">${t}</button>`;
+                    html += `<button class="opt-btn ${i===0?'selected':''}" onclick="updateMainPrice('${item.id}', this)">${t}</button>`;
                 });
                 html += `</div>`;
                 
                 if (item.hasEggOpt) {
                     html += `<div class="opt-label">加蛋/無蛋選單：</div><div class="option-group" id="egg-${item.id}">
-                        <button class="opt-btn selected" onclick="updateMainPrice('${item.id}')">加蛋</button>
-                        <button class="opt-btn" onclick="updateMainPrice('${item.id}')">無蛋</button>
+                        <button class="opt-btn selected" onclick="updateMainPrice('${item.id}', this)">加蛋</button>
+                        <button class="opt-btn" onclick="updateMainPrice('${item.id}', this)">無蛋</button>
                     </div>`;
                 } else {
                     html += `<div class="opt-label">固定配方：</div><div class="option-group" id="egg-${item.id}">
-                        <button class="opt-btn selected" style="cursor:default">無蛋</button>
+                        <button class="opt-btn selected" style="cursor:default" onclick="return false;">無蛋</button>
                     </div>`;
                 }
                 let firstKey = item.hasEggOpt ? `${item.types[0]}_加蛋` : `${item.types[0]}_無蛋`;
                 let initPrice = item.prices[firstKey] || 30;
                 html += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
             }
-            // 情況二：蛋餅 / 抓餅 與 果醬吐司 與 麵食
             else if (item.prices && !item.tempOptions) {
                 html += `<div class="opt-label">選擇規格：</div><div class="option-group" id="spec-${item.id}">`;
                 Object.keys(item.prices).forEach((spec, idx) => {
-                    html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="updateSpecPrice('${item.id}', ${item.prices[spec]})">${spec}</button>`;
+                    html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="updateSpecPrice('${item.id}', ${item.prices[spec]}, this)">${spec}</button>`;
                 });
                 html += `</div>`;
                 let initPrice = Object.values(item.prices)[0];
                 html += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
             }
-            // 情況三：冷熱飲料有大小杯與溫度
             else if (item.prices && item.tempOptions) {
                 html += `<div class="opt-label">選擇容量大小：</div><div class="option-group" id="size-${item.id}">`;
                 Object.keys(item.prices).forEach((size, idx) => {
-                    html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="updateDrinkPrice('${item.id}')">${size}</button>`;
+                    html += `<button class="opt-btn ${idx===0?'selected':''}" onclick="updateDrinkPrice('${item.id}', this)">${size}</button>`;
                 });
                 html += `</div>`;
                 
@@ -320,7 +360,6 @@
                 let initPrice = Object.values(item.prices)[0];
                 html += `</div><div class="item-footer"><span class="item-price" id="price-${item.id}">$${initPrice}</span>`;
             }
-            // 情況四：一般小吃單點
             else {
                 if(item.typeOptions) {
                     html += `<div class="opt-label">客製選項：</div><div class="option-group" id="custom-${item.id}">`;
@@ -336,14 +375,14 @@
             return html;
         }
 
-        // 單選按鈕切換輔助
         function selectSingleBtn(btn) {
             const p = btn.parentElement;
             p.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
         }
 
-        function updateMainPrice(id) {
+        function updateMainPrice(id, clickedBtn) {
+            if(clickedBtn) { selectSingleBtn(clickedBtn); }
             let item = findItemById(id);
             const typeSelected = document.getElementById(`type-${id}`).querySelector('.opt-btn.selected').innerText;
             const eggSelected = document.getElementById(`egg-${id}`).querySelector('.opt-btn.selected').innerText;
@@ -352,14 +391,13 @@
             document.getElementById(`price-${id}`).innerText = `$${price}`;
         }
         
-        function updateSpecPrice(id, price) {
-            event.target.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
-            event.target.classList.add('selected');
+        function updateSpecPrice(id, price, clickedBtn) {
+            if(clickedBtn) { selectSingleBtn(clickedBtn); }
             document.getElementById(`price-${id}`).innerText = `$${price}`;
         }
 
-        function updateDrinkPrice(id) {
-            selectSingleBtn(event.target);
+        function updateDrinkPrice(id, clickedBtn) {
+            if(clickedBtn) { selectSingleBtn(clickedBtn); }
             let item = findItemById(id);
             const sizeSelected = document.getElementById(`size-${id}`).querySelector('.opt-btn.selected').innerText;
             let price = item.prices[sizeSelected];
@@ -379,7 +417,6 @@
             let fullName = name;
             let finalPrice = 0;
 
-            // 抓取各區組裝名稱與計算價格
             if (item.types && item.prices) {
                 const typeS = document.getElementById(`type-${id}`).querySelector('.opt-btn.selected').innerText;
                 const eggS = document.getElementById(`egg-${id}`).querySelector('.opt-btn.selected').innerText;
@@ -457,22 +494,21 @@
                 status: '新訂單'
             };
 
-           push(
-  ref(db, "orders"),
-  newOrder
-)
+            const ordersRef = ref(db, "orders");
+
+const newOrderRef = push(ordersRef);
+
+set(newOrderRef, newOrder)
 .then(() => {
 
-   alert(
-     `🎉 訂單 #${currentId} 已成功送出！`
-   );
+    alert(`🎉 訂單 #${currentId} 已成功送出！`);
 
 })
 .catch(error => {
 
-   alert("送單失敗");
+    console.error(error);
 
-   console.log(error);
+    alert("訂單送出失敗");
 
 });
             
@@ -484,13 +520,19 @@
             renderCart();
         }
 
+        /* 新增：滑動定位控制函式 */
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function scrollToCart() {
+            const cartSec = document.getElementById('target-cart-section');
+            cartSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         window.onload = function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('order-date').value = today;
             initMenu();
-            
-            // 監聽按鈕點擊更新主食價格
-            window.updateMainPrice = updateMainPrice;
         };
     </script>
 </body>
