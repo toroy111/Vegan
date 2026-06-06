@@ -8,14 +8,21 @@
         :root { --primary-color: #2c3e50; --accent-color: #e67e22; --success-color: #27ae60; --bg-color: #ecf0f1; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
         body { background-color: var(--bg-color); padding: 20px; color: #333; }
-        header { background: var(--primary-color); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        header { background: var(--primary-color); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        
+        /* 🛠️ 頂部多功能精緻控制列 */
+        .controls-wrapper { background: rgba(255, 255, 255, 0.1); padding: 10px 18px; border-radius: 6px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .audio-setting-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #ecf0f1; }
+        .audio-setting-item select { padding: 4px 8px; border-radius: 4px; background: #34495e; color: white; border: 1px solid #455a64; font-size: 13px; cursor: pointer; outline: none; }
+        .audio-setting-item input[type="range"] { width: 85px; accent-color: var(--accent-color); cursor: pointer; }
         
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 20px; }
         .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         h2 { margin-bottom: 15px; font-size: 18px; border-left: 4px solid var(--accent-color); padding-left: 10px; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; vertical-align: middle; }
+        /* 表格排版欄位分配（點餐明細大空間） */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; table-layout: fixed; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #ddd; vertical-align: middle; word-wrap: break-word; }
         th { background-color: #f8f9fa; color: #555; font-weight: bold; }
         tr:hover { background-color: #fdfaf7; }
         
@@ -23,25 +30,41 @@
         .status-new { background-color: #ffeaa7; color: #d63031; animation: blink 1.5s infinite; }
         .status-done { background-color: #dff9fb; color: #27ae60; }
         
-        .action-btn { background-color: var(--success-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
+        .action-btn { background-color: var(--success-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; white-space: nowrap; }
         .action-btn:hover { background-color: #219653; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .clear-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .audio-btn { background-color: #34495e; color: #cbd5e0; border: 1px solid #455a64; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 10px; }
+        .clear-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .logout-btn { background-color: #e2e8f0; color: #4a5568; border: 1px solid #cbd5e0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; transition: 0.2s; }
+        .logout-btn:hover { background-color: #cbd5e0; color: #2d3748; }
+        .audio-btn { background-color: var(--accent-color); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .audio-btn:hover { background-color: #d35400; }
         
-        /* 🎨 新增與優化的明細排版 CSS */
-        .item-list-text { font-size: 14px; line-height: 1.6; color: #2c3e50; }
-        .food-row { margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed #f1f3f5; }
-        .food-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-        .food-title { font-weight: bold; color: #2c3e50; display: inline-block; }
+        /* 點餐明細自動分類區塊 CSS */
+        .item-list-text { font-size: 14px; line-height: 1.5; color: #2c3e50; }
+        .category-block { margin-bottom: 8px; background: #f8f9fa; border-radius: 6px; padding: 6px 10px; border-left: 4px solid #7f8c8d; }
+        .cat-main { border-left-color: #e67e22; background: #fff9f5; }   /* 主食橘色 */
+        .cat-egg { border-left-color: #f1c40f; background: #fffdf0; }    /* 蛋餅黃色 */
+        .cat-noodle { border-left-color: #9b59b6; background: #fbf6fc; } /* 麵食紫色 */
+        .cat-drink { border-left-color: #2ecc71; background: #f4fbf7; }  /* 飲料綠色 */
+        .cat-snack { border-left-color: #3498db; background: #f5faff; }  /* 小吃藍色 */
+        .cat-toast { border-left-color: #e67e22; background: #fffcf9; }  /* 果醬吐司 */
+
+        .category-title { font-size: 12px; font-weight: bold; color: #7f8c8d; margin-bottom: 4px; text-transform: uppercase; }
+        .cat-main .category-title { color: #d35400; }
+        .cat-egg .category-title { color: #b7950b; }
+        .cat-noodle .category-title { color: #8e44ad; }
+        .cat-drink .category-title { color: #27ae60; }
+        .cat-snack .category-title { color: #2980b9; }
         
-        /* 規格小徽章 */
-        .spec-badge { background-color: #edf2f7; color: #4a5568; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 5px; display: inline-block; border: 1px solid #e2e8f0; }
-        /* 套餐高亮徽章 */
-        .combo-badge { background-color: #e3faf2; color: #0ca678; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 5px; display: inline-block; border: 1px solid #96f2d7; }
-        /* 獨立客製化備註徽章 */
-        .custom-badge { background-color: #fff4e6; color: #d9480f; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 5px; display: inline-block; border: 1px solid #ffd8a8; }
+        .food-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 3px 0; border-bottom: 1px dashed #e2e8f0; }
+        .food-row:last-child { border-bottom: none; }
+        .food-title { font-weight: bold; color: #2c3e50; }
         
-        .note-text { color: #e67e22; font-size: 13px; font-weight: bold; background-color: #fff9db; padding: 6px 10px; border-radius: 6px; border-left: 3px solid #f59f00; max-width: 220px; word-break: break-all; }
+        /* 規格徽章 */
+        .spec-badge { background-color: #edf2f7; color: #4a5568; padding: 1px 5px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #e2e8f0; }
+        .combo-badge { background-color: #e3faf2; color: #0ca678; padding: 1px 5px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #96f2d7; }
+        .custom-badge { background-color: #fff4e6; color: #d9480f; padding: 1px 5px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #ffd8a8; }
+        
+        .note-text { color: #c0392b; font-size: 13px; font-weight: bold; background-color: #fdf2f2; padding: 6px 10px; border-radius: 6px; border-left: 3px solid #e74c3c; word-break: break-all; }
         .note-empty { color: #aaa; font-size: 13px; font-style: italic; }
         
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
@@ -52,11 +75,30 @@
     <header>
         <div>
             <h1 style="font-size: 22px;">🍳 珍愛家早午餐 - 即時接單後台 🔔</h1>
-            <p style="font-size: 12px; opacity: 0.8; margin-top: 3px;">系統已成功連線 Firebase：新訂單免重新整理即時跳出、全自動播放鈴聲</p>
+            <p style="font-size: 12px; opacity: 0.8; margin-top: 3px;">系統已成功連線 Firebase：多款音效自由選、即時更新不漏單</p>
         </div>
-        <div>
-            <button class="audio-btn" onclick="playDingDong()">🔊 測試音效</button>
-            <button class="clear-btn" onclick="clearAllOrders()">🧹 清空歷史訂單紀錄</button>
+        
+        <div class="controls-wrapper">
+            <div class="audio-setting-item">
+                <span>🎵 鈴聲選擇:</span>
+                <select id="sound-type">
+                    <option value="dingdong">🔔 經典叮咚聲</option>
+                    <option value="alarm">🚨 雙頻警報聲（適合吵雜環境）</option>
+                    <option value="chime">✨ 清脆和弦音</option>
+                    <option value="beep">📢 宏亮長鳴音</option>
+                </select>
+            </div>
+            <div class="audio-setting-item">
+                <span>🔊 音量:</span>
+                <input type="range" id="volume-control" min="0" max="1" step="0.1" value="0.5">
+            </div>
+            <div class="audio-setting-item">
+                <span>🎼 音調 (Hz):</span>
+                <input type="range" id="freq-control" min="300" max="1200" step="50" value="587">
+            </div>
+            <button class="audio-btn" onclick="playDingDong()">⚡ 測試鈴聲</button>
+            <button class="clear-btn" onclick="clearAllOrders()">🧹 清空紀錄</button>
+            <button class="logout-btn" onclick="handleLogout()">🚪 登出系統</button>
         </div>
     </header>
 
@@ -66,14 +108,14 @@
             <table id="orders-table">
                 <thead>
                     <tr>
-                        <th>單號</th>
-                        <th>取餐時間/方式</th>
-                        <th>聯絡電話 / LINE</th>
-                        <th style="width: 40%;">點餐品項明細 (數量)</th>
-                        <th style="width: 18%;">全單大備註</th>
-                        <th>總金額</th>
-                        <th>目前狀態</th>
-                        <th>出餐操作</th>
+                        <th style="width: 7%;">單號</th>
+                        <th style="width: 14%;">取餐時間/方式</th>
+                        <th style="width: 13%;">聯絡電話 / LINE</th>
+                        <th style="width: 45%;">點餐品項明細 (依類別自動歸類)</th>
+                        <th style="width: 11%;">全單大備註</th>
+                        <th style="width: 8%;">總金額</th>
+                        <th style="width: 8%;">目前狀態</th>
+                        <th style="width: 9%;">出餐操作</th>
                     </tr>
                 </thead>
                 <tbody id="orders-tbody">
@@ -101,34 +143,92 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // 🔊 多款自訂電子音效引擎
         function playDingDong() {
             try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc1 = audioCtx.createOscillator();
-                const gain1 = audioCtx.createGain();
-                osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(587.33, audioCtx.currentTime); 
-                gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                osc1.connect(gain1);
-                gain1.connect(audioCtx.destination);
-                osc1.start();
-                osc1.stop(audioCtx.currentTime + 0.4);
+                const userVolume = parseFloat(document.getElementById('volume-control').value);
+                const userFreq = parseFloat(document.getElementById('freq-control').value);
+                const soundType = document.getElementById('sound-type').value;
 
-                setTimeout(() => {
-                    const osc2 = audioCtx.createOscillator();
-                    const gain2 = audioCtx.createGain();
-                    osc2.type = 'sine';
-                    osc2.frequency.setValueAtTime(440.00, audioCtx.currentTime); 
-                    gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                    gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
-                    osc2.connect(gain2);
-                    gain2.connect(audioCtx.destination);
-                    osc2.start();
-                    osc2.stop(audioCtx.currentTime + 0.6);
-                }, 180);
+                if (userVolume === 0) return;
+
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                if (soundType === 'dingdong') {
+                    // 1. 經典叮咚
+                    const osc1 = audioCtx.createOscillator();
+                    const gain1 = audioCtx.createGain();
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(userFreq, audioCtx.currentTime); 
+                    gain1.gain.setValueAtTime(userVolume, audioCtx.currentTime);
+                    gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc1.connect(gain1); gain1.connect(audioCtx.destination);
+                    osc1.start(); osc1.stop(audioCtx.currentTime + 0.4);
+
+                    setTimeout(() => {
+                        const osc2 = audioCtx.createOscillator();
+                        const gain2 = audioCtx.createGain();
+                        osc2.type = 'sine';
+                        osc2.frequency.setValueAtTime(userFreq * 0.75, audioCtx.currentTime); 
+                        gain2.gain.setValueAtTime(userVolume, audioCtx.currentTime);
+                        gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                        osc2.connect(gain2); gain2.connect(audioCtx.destination);
+                        osc2.start(); osc2.stop(audioCtx.currentTime + 0.6);
+                    }, 180);
+
+                } else if (soundType === 'alarm') {
+                    // 2. 雙頻密集警報（強力提醒）
+                    for(let i = 0; i < 3; i++) {
+                        setTimeout(() => {
+                            const osc = audioCtx.createOscillator();
+                            const gain = audioCtx.createGain();
+                            osc.type = 'sawtooth'; // 鋸齒波，穿透力強
+                            osc.frequency.setValueAtTime(i % 2 === 0 ? userFreq : userFreq * 1.2, audioCtx.currentTime);
+                            gain.gain.setValueAtTime(userVolume * 0.7, audioCtx.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                            osc.connect(gain); gain.connect(audioCtx.destination);
+                            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+                        }, i * 220);
+                    }
+
+                } else if (soundType === 'chime') {
+                    // 3. 清脆和弦音
+                    const freqs = [userFreq, userFreq * 1.25, userFreq * 1.5]; // 三和弦
+                    freqs.forEach((f, index) => {
+                        setTimeout(() => {
+                            const osc = audioCtx.createOscillator();
+                            const gain = audioCtx.createGain();
+                            osc.type = 'triangle'; // 三角波，聲音圓潤清脆
+                            osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+                            gain.gain.setValueAtTime(userVolume * 0.5, audioCtx.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                            osc.connect(gain); gain.connect(audioCtx.destination);
+                            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+                        }, index * 80);
+                    });
+
+                } else if (soundType === 'beep') {
+                    // 4. 宏亮長鳴音
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(userFreq * 0.9, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(userVolume, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(userVolume, audioCtx.currentTime + 0.4);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+                }
             } catch (e) {
                 console.error("音效播放失敗: ", e);
+            }
+        }
+
+        // 🚪 登出系統返回登入首頁功能
+        function handleLogout() {
+            if (confirm("您確定要登出並離開珍愛家早午餐管理後台嗎？")) {
+                // 導回登入首頁
+                window.location.href = "index.html";
             }
         }
 
@@ -173,62 +273,92 @@
             });
         }
 
-        // 🛠️ 核心美化過濾器：將文字點餐串流轉換成乾淨的排版與標籤
-        function formatItemsToHtml(itemsString) {
+        // 智慧型大分類器：自動解析並按大類分群顯示明細
+        function formatItemsToCategorizedHtml(itemsString) {
             if (!itemsString) return '無明細';
             
-            // 將原本用逗號相連的字串打散成陣列
             const itemsArray = itemsString.split(', ');
-            let finalHtml = '';
+            const categories = {
+                main: { title: "🥪 主食系列 (吐司/漢堡/潛艇堡)", class: "cat-main", html: "" },
+                egg: { title: "🍳 蛋餅 / 抓餅系列", class: "cat-egg", html: "" },
+                noodle: { title: "🍝 鐵板美味麵食", class: "cat-noodle", html: "" },
+                drink: { title: "🥤 特調飲品 / 湯品", class: "cat-drink", html: "" },
+                toast: { title: "🍯 果醬吐司系列", class: "cat-toast", html: "" },
+                snack: { title: "🍟 美味小吃單點", class: "cat-snack", html: "" }
+            };
 
             itemsArray.forEach(item => {
                 let currentItemText = item.trim();
                 if(!currentItemText) return;
 
-                // 提取數量 (例如末尾的 x1, x2)
+                let originText = currentItemText; 
+
                 let qtyText = '';
                 const qtyMatch = currentItemText.match(/\s+x\d+$/);
                 if (qtyMatch) {
-                    qtyText = `<span style="color:#e67e22; font-weight:bold; font-size:15px; margin-left:5px;">${qtyMatch[0].trim()}</span>`;
-                    currentItemText = currentItemText.replace(/\s+x\d+$/, ''); // 去除數量文字以便後續解析
+                    qtyText = `<span style="color:#e67e22; font-weight:bold; font-size:14px; margin-left:4px;">${qtyMatch[0].trim()}</span>`;
+                    currentItemText = currentItemText.replace(/\s+x\d+$/, '');
                 }
 
-                // 1. 檢查並提取主食獨立備註 [備註: XXX]
                 let customBadgeHtml = '';
                 const noteMatch = currentItemText.match(/\[備註:\s*([^\]]+)\]/);
                 if (noteMatch) {
                     customBadgeHtml = `<span class="custom-badge">✍️ ${noteMatch[1]}</span>`;
-                    currentItemText = currentItemText.replace(/\[備註:\s*[^\]]+\]/, ''); // 清除以便解析小括號
+                    currentItemText = currentItemText.replace(/\[備註:\s*[^\]]+\]/, '');
                 }
 
-                // 2. 檢查並提取小括號內容 (套餐明細或甜度規格)
                 let specBadgeHtml = '';
                 const specMatch = currentItemText.match(/\(([^)]+)\)/);
                 if (specMatch) {
                     const specContent = specMatch[1];
                     if (specContent.includes('升級套餐:')) {
-                        // 如果是升級套餐，使用綠色醒目徽章
                         specBadgeHtml = `<span class="combo-badge">🎁 ${specContent}</span>`;
                     } else {
-                        // 一般甜度、溫度、加蛋規格使用灰色徽章
                         specBadgeHtml = `<span class="spec-badge">⚙️ ${specContent}</span>`;
                     }
-                    currentItemText = currentItemText.replace(/\([^)]+\)/, ''); // 移除小括號保留純商品名
+                    currentItemText = currentItemText.replace(/\([^)]+\)/, '');
                 }
 
-                // 組合單一菜品列
-                finalHtml += `
+                let rowHtml = `
                     <div class="food-row">
-                        <span style="color:var(--accent-color); margin-right:4px;">▪</span>
-                        <div class="food-title">${currentItemText}</div>
+                        <span class="food-title">${currentItemText.trim()}</span>
                         ${qtyText}
                         ${specBadgeHtml}
                         ${customBadgeHtml}
                     </div>
                 `;
+
+                if (originText.includes("吐司") || originText.includes("漢堡") || originText.includes("潛艇堡")) {
+                    if (originText.includes("果醬吐司")) {
+                        categories.toast.html += rowHtml;
+                    } else {
+                        categories.main.html += rowHtml;
+                    }
+                } else if (originText.includes("蛋餅") || originText.includes("抓餅")) {
+                    categories.egg.html += rowHtml;
+                } else if (originText.includes("麵") || originText.includes("套餐")) {
+                    categories.noodle.html += rowHtml;
+                } else if (originText.includes("杯") || originText.includes("茶") || originText.includes("汁") || originText.includes("豆漿") || originText.includes("咖啡") || originText.includes("湯") || originText.includes("豆乳") || originText.includes("豆奶")) {
+                    categories.drink.html += rowHtml;
+                } else {
+                    categories.snack.html += rowHtml; 
+                }
             });
 
-            return finalHtml;
+            let finalHtml = '';
+            Object.keys(categories).forEach(key => {
+                const cat = categories[key];
+                if (cat.html !== "") {
+                    finalHtml += `
+                        <div class="category-block ${cat.class}">
+                            <div class="category-title">${cat.title}</div>
+                            ${cat.html}
+                        </div>
+                    `;
+                }
+            });
+
+            return finalHtml || '無明細';
         }
 
         function renderAdminTable(orders) {
@@ -241,33 +371,31 @@
                 
                 if (order.status === '已出餐' || order.status === '已完成') {
                     statusClass = 'status-done';
-                    actionButtonHtml = `<span style="color:#27ae60; font-size:13px; font-weight:bold;">★ 已處理完畢</span>`;
+                    actionButtonHtml = `<span style="color:#27ae60; font-size:13px; font-weight:bold;">★ 已完畢</span>`;
                 }
 
                 let displayDate = order.date || '';
                 let displayTime = order.time || '';
 
-                // 處理大訂單備註的視覺（空值優雅顯示）
                 let noteHtml = `<div class="note-empty">無備註</div>`;
                 if (order.note && order.note !== '無') {
                     noteHtml = `<div class="note-text">📢 ${order.note}</div>`;
                 }
 
-                // 呼叫美化過濾器處理明細
-                let formattedItems = formatItemsToHtml(order.items);
+                let categorizedItemsHtml = formatItemsToCategorizedHtml(order.items);
 
                 html += `
                     <tr>
                         <td style="font-weight:bold; color:var(--accent-color);">#${order.id || '---'}</td>
                         <td>
-                            <div style="font-weight:600;">${order.type || '未填'}</div>
-                            <div style="font-size:12px; color:#888; margin-top:2px;">下單: ${displayDate} ${displayTime}</div>
+                            <div style="font-weight:600; font-size:14px;">${order.type || '未填'}</div>
+                            <div style="font-size:11px; color:#888; margin-top:2px;">下單: ${displayDate} ${displayTime}</div>
                         </td>
                         <td>
-                            <div>📞 ${order.phone || '無'}</div>
+                            <div style="font-size:13px;">📞 ${order.phone || '無'}</div>
                             <div style="font-size:12px; color:#10b981; margin-top:2px;">LINE: ${order.line || '無'}</div>
                         </td>
-                        <td><div class="item-list-text">${formattedItems}</div></td>
+                        <td><div class="item-list-text">${categorizedItemsHtml}</div></td>
                         <td>${noteHtml}</td>
                         <td style="font-weight:bold; color:#d63031; font-size:16px;">$${order.total || 0}</td>
                         <td><span class="status-badge ${statusClass}">${order.status || '新訂單'}</span></td>
