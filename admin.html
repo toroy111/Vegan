@@ -8,9 +8,10 @@
         :root { --primary-color: #2c3e50; --accent-color: #e67e22; --success-color: #27ae60; --bg-color: #ecf0f1; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
         body { background-color: var(--bg-color); padding: 20px; color: #333; }
+        
         header { background: var(--primary-color); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         
-        /* 🛠️ 頂部多功能精緻控制列 */
+        /* ⚙️ 頂部精緻控制列 */
         .controls-wrapper { background: rgba(255, 255, 255, 0.1); padding: 10px 18px; border-radius: 6px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .audio-setting-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #ecf0f1; }
         .audio-setting-item select { padding: 4px 8px; border-radius: 4px; background: #34495e; color: white; border: 1px solid #455a64; font-size: 13px; cursor: pointer; outline: none; }
@@ -38,15 +39,25 @@
         .audio-btn { background-color: var(--accent-color); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; }
         .audio-btn:hover { background-color: #d35400; }
         
+        /* 🔒 登入鎖定畫面樣式 */
+        .login-overlay { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+        .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; }
+        .login-box h3 { font-size: 22px; color: var(--primary-color); margin-bottom: 10px; }
+        .login-box p { font-size: 14px; color: #7f8c8d; margin-bottom: 25px; }
+        .login-box input[type="password"] { width: 100%; padding: 12px 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 6px; margin-bottom: 20px; text-align: center; outline: none; transition: 0.2s; }
+        .login-box input[type="password"]:focus { border-color: var(--accent-color); }
+        .login-submit-btn { background: var(--accent-color); color: white; border: none; padding: 12px 0; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .login-submit-btn:hover { background: #d35400; }
+        
         /* 點餐明細自動分類區塊 CSS */
         .item-list-text { font-size: 14px; line-height: 1.5; color: #2c3e50; }
         .category-block { margin-bottom: 8px; background: #f8f9fa; border-radius: 6px; padding: 6px 10px; border-left: 4px solid #7f8c8d; }
-        .cat-main { border-left-color: #e67e22; background: #fff9f5; }   /* 主食橘色 */
-        .cat-egg { border-left-color: #f1c40f; background: #fffdf0; }    /* 蛋餅黃色 */
-        .cat-noodle { border-left-color: #9b59b6; background: #fbf6fc; } /* 麵食紫色 */
-        .cat-drink { border-left-color: #2ecc71; background: #f4fbf7; }  /* 飲料綠色 */
-        .cat-snack { border-left-color: #3498db; background: #f5faff; }  /* 小吃藍色 */
-        .cat-toast { border-left-color: #e67e22; background: #fffcf9; }  /* 果醬吐司 */
+        .cat-main { border-left-color: #e67e22; background: #fff9f5; }   
+        .cat-egg { border-left-color: #f1c40f; background: #fffdf0; }    
+        .cat-noodle { border-left-color: #9b59b6; background: #fbf6fc; } 
+        .cat-drink { border-left-color: #2ecc71; background: #f4fbf7; }  
+        .cat-snack { border-left-color: #3498db; background: #f5faff; }  
+        .cat-toast { border-left-color: #e67e22; background: #fffcf9; }  
 
         .category-title { font-size: 12px; font-weight: bold; color: #7f8c8d; margin-bottom: 4px; text-transform: uppercase; }
         .cat-main .category-title { color: #d35400; }
@@ -59,7 +70,6 @@
         .food-row:last-child { border-bottom: none; }
         .food-title { font-weight: bold; color: #2c3e50; }
         
-        /* 規格徽章 */
         .spec-badge { background-color: #edf2f7; color: #4a5568; padding: 1px 5px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #e2e8f0; }
         .combo-badge { background-color: #e3faf2; color: #0ca678; padding: 1px 5px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #96f2d7; }
         .custom-badge { background-color: #fff4e6; color: #d9480f; padding: 1px 5px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #ffd8a8; }
@@ -72,56 +82,67 @@
 </head>
 <body>
 
-    <header>
-        <div>
-            <h1 style="font-size: 22px;">🍳 珍愛家早午餐 - 即時接單後台 🔔</h1>
-            <p style="font-size: 12px; opacity: 0.8; margin-top: 3px;">系統已成功連線 Firebase：多款音效自由選、即時更新不漏單</p>
+    <div id="login-section" class="login-overlay">
+        <div class="login-box">
+            <h3>🔑 店家後台安全鎖</h3>
+            <p>請輸入管理密碼以查看即時訂單</p>
+            <input type="password" id="admin-password" placeholder="請輸入後台密碼" onkeypress="if(event.key==='Enter') handleLogin()">
+            <button class="login-submit-btn" onclick="handleLogin()">驗證並登入後台</button>
         </div>
-        
-        <div class="controls-wrapper">
-            <div class="audio-setting-item">
-                <span>🎵 鈴聲選擇:</span>
-                <select id="sound-type">
-                    <option value="dingdong">🔔 經典叮咚聲</option>
-                    <option value="alarm">🚨 雙頻警報聲（適合吵雜環境）</option>
-                    <option value="chime">✨ 清脆和弦音</option>
-                    <option value="beep">📢 宏亮長鳴音</option>
-                </select>
-            </div>
-            <div class="audio-setting-item">
-                <span>🔊 音量:</span>
-                <input type="range" id="volume-control" min="0" max="1" step="0.1" value="0.5">
-            </div>
-            <div class="audio-setting-item">
-                <span>🎼 音調 (Hz):</span>
-                <input type="range" id="freq-control" min="300" max="1200" step="50" value="587">
-            </div>
-            <button class="audio-btn" onclick="playDingDong()">⚡ 測試鈴聲</button>
-            <button class="clear-btn" onclick="clearAllOrders()">🧹 清空紀錄</button>
-            <button class="logout-btn" onclick="handleLogout()">🚪 退出後台</button>
-        </div>
-    </header>
+    </div>
 
-    <div class="dashboard">
-        <div class="card">
-            <h2>📥 當日點餐訂單列表 (最新訂單排在最上方)</h2>
-            <table id="orders-table">
-                <thead>
-                    <tr>
-                        <th style="width: 7%;">單號</th>
-                        <th style="width: 14%;">取餐時間/方式</th>
-                        <th style="width: 13%;">聯絡電話 / LINE</th>
-                        <th style="width: 45%;">點餐品項明細 (依類別自動歸類)</th>
-                        <th style="width: 11%;">全單大備註</th>
-                        <th style="width: 8%;">總金額</th>
-                        <th style="width: 8%;">目前狀態</th>
-                        <th style="width: 9%;">出餐操作</th>
-                    </tr>
-                </thead>
-                <tbody id="orders-tbody">
-                    <tr><td colspan="8" style="text-align:center; color:#aaa; padding:30px;">連線中，請稍候...</td></tr>
-                </tbody>
-            </table>
+    <div id="admin-main-section" style="display: none;">
+        <header>
+            <div>
+                <h1 style="font-size: 22px;">🍳 珍愛家早午餐 - 即時接單後台 🔔</h1>
+                <p style="font-size: 12px; opacity: 0.8; margin-top: 3px;">安全模式：退出後台將立刻切斷資料庫連線並上鎖</p>
+            </div>
+            
+            <div class="controls-wrapper">
+                <div class="audio-setting-item">
+                    <span>🎵 鈴聲:</span>
+                    <select id="sound-type">
+                        <option value="dingdong">🔔 經典叮咚聲</option>
+                        <option value="alarm">🚨 雙頻警報聲</option>
+                        <option value="chime">✨ 清脆和弦音</option>
+                        <option value="beep">📢 宏亮長鳴音</option>
+                    </select>
+                </div>
+                <div class="audio-setting-item">
+                    <span>🔊 音量:</span>
+                    <input type="range" id="volume-control" min="0" max="1" step="0.1" value="0.5">
+                </div>
+                <div class="audio-setting-item">
+                    <span>🎼 音調:</span>
+                    <input type="range" id="freq-control" min="300" max="1200" step="50" value="587">
+                </div>
+                <button class="audio-btn" onclick="playDingDong()">⚡ 測試</button>
+                <button class="clear-btn" onclick="clearAllOrders()">🧹 清空紀錄</button>
+                <button class="logout-btn" onclick="handleLogout()">🚪 退出後台 (安全登出)</button>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <div class="card">
+                <h2>📥 當日點餐訂單列表 (最新訂單排在最上方)</h2>
+                <table id="orders-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 7%;">單號</th>
+                            <th style="width: 14%;">取餐時間/方式</th>
+                            <th style="width: 13%;">聯絡電話 / LINE</th>
+                            <th style="width: 45%;">點餐品項明細 (依類別自動歸類)</th>
+                            <th style="width: 11%;">全單大備註</th>
+                            <th style="width: 8%;">總金額</th>
+                            <th style="width: 8%;">目前狀態</th>
+                            <th style="width: 9%;">出餐操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-tbody">
+                        <tr><td colspan="8" style="text-align:center; color:#aaa; padding:30px;">載入中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -129,6 +150,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
+        // 🔑 後台管理密碼設定（目前預設是 1234，您可以改成自己喜歡的）
+        const CORRECT_PASSWORD = "1234";
+
         const firebaseConfig = {
             apiKey: "AIzaSyAgeP2a6Z-TqJaZ5F0j_2UoXVQ_WE3sckw",
             authDomain: "jafff-34d02.firebaseapp.com",
@@ -142,8 +166,48 @@
 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        let ordersRef = null;
 
-        // 🔊 多款自訂電子音效引擎
+        // 🔓 執行登入驗證
+        function handleLogin() {
+            const inputPass = document.getElementById('admin-password').value;
+            if (inputPass === CORRECT_PASSWORD) {
+                sessionStorage.setItem('isAdminLoggedIn', 'true');
+                showAdminDashboard();
+            } else {
+                alert('❌ 密碼錯誤！無法進入管理後台。');
+                document.getElementById('admin-password').value = '';
+            }
+        }
+
+        // 🚪 徹底清除權限並隱藏後台資料 (完全登出)
+        function handleLogout() {
+            if (confirm("您確定要登出並退出後台管理畫面嗎？\n退出後將需要重新輸入密碼才可檢視訂單。")) {
+                // 1. 關閉 Firebase 的即時監聽連線
+                if (ordersRef) {
+                    ordersRef.off();
+                }
+                // 2. 清除暫存權限
+                sessionStorage.removeItem('isAdminLoggedIn');
+                
+                // 3. 隱藏後台結構，顯示密碼鎖
+                document.getElementById('admin-main-section').style.display = 'none';
+                document.getElementById('login-section').style.display = 'flex';
+                document.getElementById('admin-password').value = '';
+                document.getElementById('orders-tbody').innerHTML = `<tr><td colspan="8" style="text-align:center; color:#aaa; padding:30px;">載入中...</td></tr>`;
+                
+                lastKnownTopOrderKey = null;
+            }
+        }
+
+        // 顯示主介面並開始連線 Firebase 監聽
+        function showAdminDashboard() {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('admin-main-section').style.display = 'block';
+            listenToFirebaseOrders();
+        }
+
+        // 🔊 多功能自訂鈴聲引擎
         function playDingDong() {
             try {
                 const userVolume = parseFloat(document.getElementById('volume-control').value);
@@ -220,26 +284,10 @@
             }
         }
 
-        // 🚪 退出/登出後台管理畫面核心邏輯
-        function handleLogout() {
-            if (confirm("您確定要退出當前後台畫面，關閉訂單列表嗎？")) {
-                // 1. 清除瀏覽器中儲存的後台管理登入狀態或權限 Token（若有使用的話）
-                sessionStorage.clear();
-                localStorage.removeItem('admin_authenticated');
-                
-                // 2. 徹底登出或重新整理，將畫面導向您的後台登入檢查驗證頁
-                // 如果您的登入頁檔名是 login.html，請把下面這行註解解開：
-                // window.location.href = "login.html";
-                
-                // 若是在同個檔案進行帳密管制，則直接強制刷新頁面退出狀態：
-                location.reload();
-            }
-        }
-
         let lastKnownTopOrderKey = null;
 
         function listenToFirebaseOrders() {
-            const ordersRef = database.ref('orders');
+            ordersRef = database.ref('orders');
 
             ordersRef.on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -432,8 +480,11 @@
             }
         }
 
+        // 頁面初次載入：檢查先前是否已經登入過
         window.onload = function() {
-            listenToFirebaseOrders();
+            if (sessionStorage.getItem('isAdminLoggedIn') === 'true') {
+                showAdminDashboard();
+            }
         };
     </script>
 </body>
