@@ -4,36 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>珍愛家素食早午餐 - 後台接單系統</title>
+    <!-- 引入 FontAwesome 經典圖標庫，用來顯示用戶與鎖頭圖標 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --primary-color: #2c3e50; --accent-color: #e67e22; --success-color: #27ae60; --bg-color: #ecf0f1; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
         body { background-color: var(--bg-color); padding: 20px; color: #333; }
         
-        /* 🔒 獨立加碼：全新高質感登入畫面樣式 */
+        /* 🔒 完美對接 image_293c03.png 的高級毛玻璃登入畫面 */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+            background: url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=1920') no-repeat center center/cover;
             display: flex; justify-content: center; align-items: center; z-index: 99999;
         }
-        .login-box {
-            background: white; padding: 40px; border-radius: 12px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3); width: 100%; max-width: 400px; text-align: center;
+        /* 藍色煙燻疊加層，完美複製截圖的深藍冷調色澤 */
+        #login-overlay::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 62, 80, 0.65); backdrop-filter: blur(3px); z-index: 1;
         }
-        .login-box h2 { border-left: none; padding-left: 0; font-size: 24px; margin-bottom: 8px; color: #2c3e50; }
-        .login-box p { color: #7f8c8d; font-size: 14px; margin-bottom: 25px; }
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 6px; color: #34495e; }
-        .input-group input {
-            width: 100%; padding: 12px; border: 1px solid #ccd6e0; border-radius: 6px;
-            font-size: 16px; transition: 0.2s; outline: none;
+        .login-container {
+            position: relative; z-index: 2; width: 100%; max-width: 360px; text-align: center; padding: 20px;
         }
-        .input-group input:focus { border-color: var(--accent-color); box-shadow: 0 0 5px rgba(230,126,34,0.3); }
-        .login-btn {
-            width: 100%; background-color: var(--accent-color); color: white; border: none;
-            padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        .login-logo {
+            color: white; font-size: 26px; font-weight: bold; letter-spacing: 2px; margin-bottom: 35px; text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        .login-btn:hover { background-color: #d35400; }
-        .error-msg { color: #e74c3c; font-size: 13px; margin-top: 10px; font-weight: bold; display: none; }
+        .input-field-group {
+            position: relative; margin-bottom: 18px; width: 100%;
+        }
+        /* 膠囊半透明輸入框 */
+        .input-field-group input {
+            width: 100%; padding: 14px 14px 14px 45px; border: none; 
+            background: rgba(255, 255, 255, 0.22); border-radius: 50px;
+            font-size: 15px; color: white; outline: none; transition: 0.2s;
+        }
+        .input-field-group input::placeholder { color: rgba(255, 255, 255, 0.7); font-size: 14px; }
+        .input-field-group input:focus { background: rgba(255, 255, 255, 0.32); box-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        /* 輸入框左側精緻小圖標 */
+        .input-field-group i {
+            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7); font-size: 15px;
+        }
+        /* 科技亮藍色登入按鈕 */
+        .submit-login-btn {
+            width: 100%; background-color: #3b66de; color: white; border: none;
+            padding: 14px; border-radius: 50px; font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(59, 102, 222, 0.3); margin-bottom: 20px;
+        }
+        .submit-login-btn:hover { background-color: #2a52c7; box-shadow: 0 4px 16px rgba(59, 102, 222, 0.5); }
+        
+        /* 輔助功能文字排版區 */
+        .login-links-row {
+            display: flex; justify-content: space-between; align-items: center;
+            color: rgba(255, 255, 255, 0.85); font-size: 13px; margin-bottom: 15px; padding: 0 5px;
+        }
+        .login-links-row a { color: rgba(255, 255, 255, 0.85); text-decoration: none; cursor: pointer; }
+        .login-links-row a:hover { color: white; text-decoration: underline; }
+        
+        /* 仿真開關切換鈕 (Toggle Switch) */
+        .remember-crypto { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .switch-bar {
+            position: relative; display: inline-block; width: 34px; height: 18px;
+            background-color: rgba(255,255,255,0.3); border-radius: 20px; transition: 0.3s;
+        }
+        .switch-bar::after {
+            content: ''; position: absolute; width: 14px; height: 14px;
+            border-radius: 50%; background-color: white; top: 2px; left: 2px; transition: 0.3s;
+        }
+        #remember-check { display: none; }
+        #remember-check:checked + .switch-bar { background-color: #3b66de; }
+        #remember-check:checked + .switch-bar::after { left: 18px; }
+
+        .error-toast { background: rgba(231, 76, 60, 0.9); color: white; padding: 10px 20px; border-radius: 50px; font-size: 13px; font-weight: bold; margin-top: 15px; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
         /* 後台主畫面結構 (預設先隱藏，登入成功才顯現) */
         #admin-main-content { display: none; }
@@ -68,28 +109,54 @@
 </head>
 <body>
 
+    <!-- 🔒 登入遮罩視窗 (完美仿製截圖設計) -->
     <div id="login-overlay">
-        <div class="login-box">
-            <h2>🍳 珍愛家早午餐</h2>
-            <p>管理系統安全驗證</p>
-            <div class="input-group">
-                <label>管理者帳號</label>
-                <input type="text" id="username" placeholder="請輸入帳號" onkeypress="handleKeyPress(event)">
+        <div class="login-container">
+            <!-- 頂部 LOGO 區塊 -->
+            <div class="login-logo">LOGO</div>
+            
+            <!-- 帳號輸入框 -->
+            <div class="input-field-group">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="username" placeholder="用戶名" onkeypress="handleKeyPress(event)">
             </div>
-            <div class="input-group">
-                <label>安全密碼</label>
-                <input type="password" id="password" placeholder="請輸入密碼" onkeypress="handleKeyPress(event)">
+            
+            <!-- 密碼輸入框 -->
+            <div class="input-field-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="password" placeholder="密碼" onkeypress="handleKeyPress(event)">
             </div>
-            <button class="login-btn" onclick="checkLogin()">登入系統</button>
-            <div id="error-message" class="error-msg">❌ 帳號或密碼輸入錯誤，請重新確認！</div>
+            
+            <!-- 亮藍色登入按鈕 -->
+            <button class="submit-login-btn" onclick="checkLogin()">登錄</button>
+            
+            <!-- 第一排輔助鏈接：記住密碼開關 & 忘記密碼 -->
+            <div class="login-links-row">
+                <label class="remember-crypto">
+                    <input type="checkbox" id="remember-check">
+                    <span class="switch-bar"></span>
+                    <span>記住密碼</span>
+                </label>
+                <a onclick="alert('請聯繫系統技術人員協助重設密碼！')">忘記密碼</a>
+            </div>
+
+            <!-- 第二排輔助鏈接：創建帳號 & 其他幫助 -->
+            <div class="login-links-row">
+                <a onclick="alert('本後台不開放對外註冊，請聯絡店長建立權限。')">創建帳號</a>
+                <a onclick="alert('珍愛家後台系統 V2.0\n已連接：新加坡 (asia-southeast1) 雲端中心')">其他幫助</a>
+            </div>
+
+            <!-- 錯誤提示小彈窗 -->
+            <div id="error-toast" class="error-toast">❌ 用戶名或密碼不正確，請重新輸入</div>
         </div>
     </div>
 
+    <!-- 🔓 後台真正的主畫面內容 -->
     <div id="admin-main-content">
         <header>
             <div>
                 <h1 style="font-size: 22px;">🍳 珍愛家早午餐 - 即時接單後台 🔔</h1>
-                <p style="font-size: 12px; opacity: 0.8; margin-top: 3px;">已成功對接新加坡雲端資料庫 | 管理員已成功登入</p>
+                <p style="font-size: 12px; opacity: 0.8; margin-top: 3px;">系統已成功連線新加坡機房：新訂單免重新整理即時跳出、全自動播放鈴聲</p>
             </div>
             
             <div class="sound-control-panel">
@@ -132,11 +199,12 @@
         </div>
     </div>
 
+    <!-- 載入 Firebase 核心與資料庫模組 -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
-        // 1. Firebase 連線設定 (完全採用你上傳截圖內的新加坡機房設定)
+        // Firebase 連線設定 (採用新加坡專屬雲端網址)
         const firebaseConfig = {
             apiKey: "AlzaSyAgeP2a6Z-TqJaZ5F0j_2UoXVQ_WE3sckw",
             authDomain: "toroy111-3219c.firebaseapp.com",
@@ -147,116 +215,78 @@
             databaseURL: "https://toroy111-3219c-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
-        // 這裡先宣告變數，登入成功後才會真正去初始化 Firebase，防止沒登入的人撈取資料
         let database = null;
         let lastKnownTopOrderKey = null;
 
-        // 🔒 2. 登入檢查機制
+        // 🔒 登入功能驗證 (帳號: admin, 密碼: jenaijia520)
         function checkLogin() {
             const userIn = document.getElementById('username').value.trim();
             const passIn = document.getElementById('password').value.trim();
-            const errMsg = document.getElementById('error-message');
+            const errToast = document.getElementById('error-toast');
 
-            // 🔑 在這裡設定你的管理員帳號與密碼
             if (userIn === "admin" && passIn === "jenaijia520") {
-                // 登入成功：隱藏遮罩、打開主畫面
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('admin-main-content').style.display = 'block';
-                
-                // 啟動 Firebase
                 startAdminSystem();
             } else {
-                // 登入失敗：顯示紅字錯誤
-                errMsg.style.display = 'block';
-                document.getElementById('password').value = ''; // 清空密碼欄
+                errToast.style.display = 'block';
+                document.getElementById('password').value = '';
+                setTimeout(() => { errToast.style.display = 'none'; }, 3000);
             }
         }
 
-        // 支援鍵盤按 Enter 直接登入
         function handleKeyPress(event) {
-            if (event.key === "Enter") {
-                checkLogin();
-            }
+            if (event.key === "Enter") { checkLogin(); }
         }
 
-        // 🔓 3. 登入成功後才執行的系統啟動函式
         function startAdminSystem() {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
+            if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
             database = firebase.database();
-            
-            // 開始即時接單監聽
             listenToFirebaseOrders();
         }
 
-        // 🎵 萬用電子音效合成器
+        // 🎵 萬用音效發聲引擎
         function playSystemSound(mode) {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                
                 if (mode === 'long') {
                     const notes = [523.25, 659.25, 783.99, 1046.50]; 
                     notes.forEach((freq, index) => {
                         setTimeout(() => {
-                            const osc = audioCtx.createOscillator();
-                            const gain = audioCtx.createGain();
-                            osc.type = 'triangle';
-                            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                            gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-                            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
-                            osc.connect(gain); gain.connect(audioCtx.destination);
-                            osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+                            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                            osc.type = 'triangle'; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                            gain.gain.setValueAtTime(0.25, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.6);
                         }, index * 250);
                     });
-                } 
-                else if (mode === 'dingdong') {
-                    const osc1 = audioCtx.createOscillator();
-                    const gain1 = audioCtx.createGain();
-                    osc1.frequency.setValueAtTime(587.33, audioCtx.currentTime); 
-                    gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                } else if (mode === 'dingdong') {
+                    const osc1 = audioCtx.createOscillator(); const gain1 = audioCtx.createGain();
+                    osc1.frequency.setValueAtTime(587.33, audioCtx.currentTime); gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
                     gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                    osc1.connect(gain1); gain1.connect(audioCtx.destination);
-                    osc1.start(); osc1.stop(audioCtx.currentTime + 0.4);
-
+                    osc1.connect(gain1); gain1.connect(audioCtx.destination); osc1.start(); osc1.stop(audioCtx.currentTime + 0.4);
                     setTimeout(() => {
-                        const osc2 = audioCtx.createOscillator();
-                        const gain2 = audioCtx.createGain();
-                        osc2.frequency.setValueAtTime(440.00, audioCtx.currentTime); 
-                        gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                        const osc2 = audioCtx.createOscillator(); const gain2 = audioCtx.createGain();
+                        osc2.frequency.setValueAtTime(440.00, audioCtx.currentTime); gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
                         gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
-                        osc2.connect(gain2); gain2.connect(audioCtx.destination);
-                        osc2.start(); osc2.stop(audioCtx.currentTime + 0.6);
+                        osc2.connect(gain2); gain2.connect(audioCtx.destination); osc2.start(); osc2.stop(audioCtx.currentTime + 0.6);
                     }, 180);
-                } 
-                else if (mode === 'alarm') {
+                } else if (mode === 'alarm') {
                     for (let i = 0; i < 4; i++) {
                         setTimeout(() => {
-                            const osc = audioCtx.createOscillator();
-                            const gain = audioCtx.createGain();
-                            osc.type = 'sawtooth';
-                            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-                            osc.connect(gain); gain.connect(audioCtx.destination);
-                            osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+                            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                            gain.gain.setValueAtTime(0.15, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.15);
                         }, i * 200);
                     }
-                } 
-                else if (mode === 'sci-fi') {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                } else if (mode === 'sci-fi') {
+                    const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(300, audioCtx.currentTime);
                     osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.8);
-                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
-                    osc.connect(gain); gain.connect(audioCtx.destination);
-                    osc.start(); osc.stop(audioCtx.currentTime + 0.8);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+                    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.8);
                 }
-            } catch (e) {
-                console.error("音效播放失敗: ", e);
-            }
+            } catch (e) { console.error("音效播放失敗: ", e); }
         }
 
         function testSound() {
@@ -264,175 +294,84 @@
             playSystemSound(currentMode);
         }
 
-        // 4. 核心功能：監聽 Firebase Realtime Database
         function listenToFirebaseOrders() {
             if(!database) return;
-            const ordersRef = database.ref('orders');
-
-            ordersRef.on('value', (snapshot) => {
+            database.ref('orders').on('value', (snapshot) => {
                 const data = snapshot.val();
                 const tbody = document.getElementById('orders-tbody');
-                
                 if (!data) {
                     tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#aaa; padding:30px;">目前沒有任何點餐訂單紀錄</td></tr>`;
-                    lastKnownTopOrderKey = null;
-                    return;
+                    lastKnownTopOrderKey = null; return;
                 }
-
                 const ordersArray = [];
-                Object.keys(data).forEach(key => {
-                    ordersArray.push({
-                        firebaseKey: key,
-                        ...data[key]
-                    });
-                });
-
-                // 排序：新訂單排在最上方
+                Object.keys(data).forEach(key => { ordersArray.push({ firebaseKey: key, ...data[key] }); });
                 ordersArray.sort((a, b) => (b.timestamp || b.id) - (a.timestamp || a.id));
 
-                // 新訂單自動響鈴邏輯
                 if (ordersArray.length > 0) {
                     const currentTopKey = ordersArray[0].firebaseKey;
                     if (lastKnownTopOrderKey !== null && lastKnownTopOrderKey !== currentTopKey) {
                         if (ordersArray[0].status === '新訂單') {
-                            const chosenSound = document.getElementById('sound-mode').value;
-                            playSystemSound(chosenSound);
+                            playSystemSound(document.getElementById('sound-mode').value);
                         }
                     }
                     lastKnownTopOrderKey = currentTopKey;
                 }
-
-                // 渲染畫面
                 renderAdminTable(ordersArray); 
-            }, (error) => {
-                console.error("後台讀取 Firebase 失敗:", error);
             });
         }
 
-        // 5. 畫面表格繪製功能 (內建大清晰排版表格與分類標籤)
         function renderAdminTable(orders) {
             const tbody = document.getElementById('orders-tbody');
-            if(!tbody) return;
-            
             let html = '';
-
             orders.forEach(order => {
                 let statusClass = 'status-new';
                 let actionButtonHtml = `<button class="action-btn" onclick="updateOrderStatus('${order.firebaseKey}', '已出餐')">完成出餐 ✔</button>`;
-                
                 if (order.status === '已出餐' || order.status === '已完成') {
                     statusClass = 'status-done';
                     actionButtonHtml = `<span style="color:#27ae60; font-size:13px; font-weight:bold;">★ 已處理完畢</span>`;
                 }
-
-                let displayDate = order.date || '';
-                let displayTime = order.time || '';
-
-                // 品項表格化與智慧分類標籤
-                let itemsTableHtml = '';
-                if (order.items) {
-                    itemsTableHtml = `
-                        <table style="width:100%; border-collapse:collapse; margin:0; background:transparent; font-size:14px;">
-                            <thead>
-                                <tr style="background:#f1f2f6; color:#555; font-size:12px;">
-                                    <th style="padding:6px 10px; border-bottom:2px solid #ced6e0; text-align:left;">餐點名稱</th>
-                                    <th style="padding:6px 10px; border-bottom:2px solid #ced6e0; text-align:center; width:50px;">數量</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-
-                    if (Array.isArray(order.items)) {
-                        order.items.forEach(item => {
-                            let categoryBadge = '';
-                            const name = item.fullName || '';
-                            
-                            if (name.includes('漢堡') || name.includes('吐司') || name.includes('拼盤') || name.includes('飯') || name.includes('麵')) {
-                                categoryBadge = `<span style="background:#e8f4fd; color:#1e88e5; padding:2px 6px; border-radius:4px; font-size:11px; margin-right:6px; font-weight:bold;">主餐</span>`;
-                            } else if (name.includes('蛋餅') || name.includes('抓餅')) {
-                                categoryBadge = `<span style="background:#fef5e7; color:#f39c12; padding:2px 6px; border-radius:4px; font-size:11px; margin-right:6px; font-weight:bold;">蛋餅</span>`;
-                            } else if (name.includes('紅茶') || name.includes('奶茶') || name.includes('豆漿') || name.includes('咖啡') || name.includes('飲') || name.includes('汁')) {
-                                categoryBadge = `<span style="background:#eafaf1; color:#2ecc71; padding:2px 6px; border-radius:4px; font-size:11px; margin-right:6px; font-weight:bold;">飲料</span>`;
-                            } else {
-                                categoryBadge = `<span style="background:#f4f6f7; color:#7f8c8d; padding:2px 6px; border-radius:4px; font-size:11px; margin-right:6px; font-weight:bold;">點心</span>`;
-                            }
-
-                            itemsTableHtml += `
-                                <tr style="border-bottom:1px solid #eee;">
-                                    <td style="padding:8px 10px; text-align:left; font-weight:600; color:#2c3e50;">${categoryBadge}${name}</td>
-                                    <td style="padding:8px 10px; text-align:center; font-weight:bold; color:#e67e22; font-size:15px;">${item.qty || 1}</td>
-                                </tr>
-                            `;
-                        });
-                    } else {
-                        const textLines = order.items.split('\n');
-                        textLines.forEach(line => {
-                            if(line.trim() === '') return;
-                            itemsTableHtml += `
-                                <tr style="border-bottom:1px solid #eee;">
-                                    <td style="padding:8px 10px; text-align:left; font-weight:600; color:#2c3e50;">${line}</td>
-                                    <td style="padding:8px 10px; text-align:center; font-weight:bold; color:#e67e22;">-</td>
-                                </tr>
-                            `;
-                        });
-                    }
-                    itemsTableHtml += `</tbody></table>`;
+                let itemsTableHtml = `<table style="width:100%; border-collapse:collapse; background:transparent; font-size:14px;"><tbody>`;
+                if (Array.isArray(order.items)) {
+                    order.items.forEach(item => {
+                        let badge = `<span style="background:#f4f6f7; color:#7f8c8d; padding:2px 6px; border-radius:4px; font-size:11px; margin-right:6px; font-weight:bold;">點心</span>`;
+                        const n = item.fullName || '';
+                        if (n.includes('漢堡') || n.includes('吐司') || n.includes('麵')) badge = `<span style="background:#e8f4fd; color:#1e88e5; padding:2px 6px; border-radius:4px; font-size:11px; margin-right:6px; font-weight:bold;">主餐</span>`;
+                        if (n.includes('蛋餅')) badge = `<span style="background:#fef5e7; color:#f39c12; padding:2px 6px; border-radius:4px; font-size:11px; margin-right:6px; font-weight:bold;">蛋餅</span>`;
+                        if (n.includes('茶') || n.includes('奶') || n.includes('漿')) badge = `<span style="background:#eafaf1; color:#2ecc71; padding:2px 6px; border-radius:4px; font-size:11px; margin-right:6px; font-weight:bold;">飲料</span>`;
+                        itemsTableHtml += `<tr style="border-bottom:1px solid #eee;"><td style="padding:6px; text-align:left; font-weight:600;">${badge}${n}</td><td style="padding:6px; text-align:center; color:#e67e22; font-weight:bold;">${item.qty || 1}</td></tr>`;
+                    });
                 } else {
-                    itemsTableHtml = '<span style="color:#aaa;">無明細</span>';
+                    itemsTableHtml += `<tr><td>${order.items || '無明細'}</td></tr>`;
                 }
+                itemsTableHtml += '</tbody></table>';
 
                 html += `
                     <tr>
-                        <td style="font-weight:bold; color:var(--accent-color); font-size:16px;">#${order.id || '---'}</td>
-                        <td>
-                            <div style="font-weight:600; font-size:15px; color:#2c3e50;">${order.type || '未填'}</div>
-                            <div style="font-size:12px; color:#888; margin-top:4px;">下單: ${displayDate} ${displayTime}</div>
-                        </td>
-                        <td>
-                            <div style="font-weight:600;">📞 ${order.phone || '無'}</div>
-                            <div style="font-size:12px; color:#10b981; margin-top:3px; font-weight:500;">LINE: ${order.line || '無'}</div>
-                        </td>
-                        <td style="padding:8px; background:#fafafa; width:320px; border-left:3px solid #ced6e0;">${itemsTableHtml}</td>
-                        <td><div class="note-text" style="font-weight:500;">${order.note || '無'}</div></td>
-                        <td style="font-weight:bold; color:#d63031; font-size:18px;">$${order.total || 0}</td>
+                        <td style="font-weight:bold; color:var(--accent-color);">#${order.id || '---'}</td>
+                        <td><div style="font-weight:600;">${order.type || '未填'}</div><div style="font-size:12px; color:#888; margin-top:2px;">${order.date || ''} ${order.time || ''}</div></td>
+                        <td><div>📞 ${order.phone || '無'}</div><div style="font-size:12px; color:#10b981; margin-top:2px;">LINE: ${order.line || '無'}</div></td>
+                        <td style="padding:6px; background:#fafafa; width:300px; border-left:3px solid #ced6e0;">${itemsTableHtml}</td>
+                        <td><div class="note-text">${order.note || '無'}</div></td>
+                        <td style="font-weight:bold; color:#d63031; font-size:16px;">$${order.total || 0}</td>
                         <td><span class="status-badge ${statusClass}">${order.status || '新訂單'}</span></td>
                         <td>${actionButtonHtml}</td>
                     </tr>
                 `;
             });
-
             tbody.innerHTML = html;
         }
 
-        // 6. 更新訂單狀態功能
         function updateOrderStatus(firebaseKey, newStatus) {
             if(!database) return;
-            database.ref(`orders/${firebaseKey}`).update({
-                status: newStatus
-            })
-            .catch(err => {
-                alert('更改狀態失敗: ' + err.message);
-            });
+            database.ref(`orders/${firebaseKey}`).update({ status: newStatus });
         }
 
-        // 7. 清空所有歷史訂單功能
         function clearAllOrders() {
             if(!database) return;
-            if (confirm('⚠️ 確定要徹底清空雲端資料庫內的所有訂單紀錄嗎？\n此動作將無法復原！')) {
-                database.ref('orders').remove()
-                .then(() => {
-                    alert('🧹 雲端資料庫已全數清空完畢！');
-                })
-                .catch(err => {
-                    alert('清空失敗: ' + err.message);
-                });
+            if (confirm('⚠️ 確定要徹底清空雲端資料庫內的所有訂單紀錄嗎？')) {
+                database.ref('orders').remove().then(() => { alert('🧹 雲端資料庫已全數清空！'); });
             }
         }
-
-        // 🌟 網頁載入時不再自動監聽 Firebase，而是等待登入成功
-        window.onload = function() {
-            // 空置，等待 checkLogin 觸發
-        };
     </script>
 </body>
 </html>
