@@ -192,4 +192,195 @@
                 const tbody = document.getElementById('orders-tbody');
                 
                 if (!data) {
-                    tbody.innerHTML = `<tr><td colspan="8"
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#aaa; padding:30px;">目前沒有任何點餐訂單紀錄</td></tr>`;
+                    lastKnownTopOrderKey = null;
+                    return;
+                }
+
+                const ordersArray = [];
+                Object.keys(data).forEach(key => {
+                    ordersArray.push({
+                        firebaseKey: key,
+                        ...data[key]
+                    });
+                });
+
+                ordersArray.sort((a, b) => (b.timestamp || b.id) - (a.timestamp || a.id));
+
+                if (ordersArray.length > 0) {
+                    const currentTopKey = ordersArray[0].firebaseKey;
+                    if (lastKnownTopOrderKey !== null && lastKnownTopOrderKey !== currentTopKey) {
+                        if (ordersArray[0].status === '新訂單') {
+                            playDingDong();
+                        }
+                    }
+                    lastKnownTopOrderKey = currentTopKey;
+                }
+
+                renderAdminTable(ordersArray); 
+            }, (error) => {
+                console.error("後台讀取 Firebase 失敗:", error);
+            });
+        }
+
+        // 智慧型大分類器
+        function formatItemsToCategorizedHtml(itemsString) {
+            if (!itemsString) return '無明細';
+            
+            const itemsArray = itemsString.split(', ');
+            const categories = {
+                main: { title: "🥪 主食系列 (吐司/漢堡/潛艇堡)", class: "cat-main", html: "" },
+                egg: { title: "🍳 蛋餅 / 抓餅系列", class: "cat-egg", html: "" },
+                noodle: { title: "🍝 鐵板美味麵食", class: "cat-noodle", html: "" },
+                drink: { title: "🥤 特調飲品 / 湯品", class: "cat-drink", html: "" },
+                toast: { title: "🍯 果醬吐司系列", class: "cat-toast", html: "" },
+                snack: { title: "🍟 美味小吃單點", class: "cat-snack", html: "" }
+            };
+
+            itemsArray.forEach(item => {
+                let currentItemText = item.trim();
+                if(!currentItemText) return;
+
+                let originText = currentItemText; 
+
+                let qtyText = '';
+                const qtyMatch = currentItemText.match(/\s+x\d+$/);
+                if (qtyMatch) {
+                    qtyText = `<span style="color:#e67e22; font-weight:bold; font-size:14px; margin-left:4px;">${qtyMatch[0].trim()}</span>`;
+                    currentItemText = currentItemText.replace(/\s+x\d+$/, '');
+                }
+
+                let customBadgeHtml = '';
+                const noteMatch = currentItemText.match(/\[備註:\s*([^\]]+)\]/);
+                if (noteMatch) {
+                    customBadgeHtml = `<span class="custom-badge">✍️ ${noteMatch[1]}</span>`;
+                    currentItemText = currentItemText.replace(/\[備註:\s*[^\]]+\]/, '');
+                }
+
+                let specBadgeHtml = '';
+                const specMatch = currentItemText.match(/\(([^)]+)\)/);
+                if (specMatch) {
+                    const specContent = specMatch[1];
+                    if (specContent.includes('升級套餐:')) {
+                        specBadgeHtml = `<span class="combo-badge">🎁 ${specContent}</span>`;
+                    } else {
+                        specBadgeHtml = `<span class="spec-badge">⚙️ ${specContent}</span>`;
+                    }
+                    currentItemText = currentItemText.replace(/\([^)]+\)/, '');
+                }
+
+                let rowHtml = `
+                    <div class="food-row">
+                        <span class="food-title">${currentItemText.trim()}</span>
+                        ${qtyText}
+                        ${specBadgeHtml}
+                        ${customBadgeHtml}
+                    </div>
+                `;
+
+                if (originText.includes("吐司") || originText.includes("漢堡") || originText.includes("潛艇堡")) {
+                    if (originText.includes("果醬吐司")) {
+                        categories.toast.html += rowHtml;
+                    } else {
+                        categories.main.html += rowHtml;
+                    }
+                } else if (originText.includes("蛋餅") || originText.includes("抓餅")) {
+                    categories.egg.html += rowHtml;
+                } else if (originText.includes("麵") || originText.includes("套餐")) {
+                    categories.noodle.html += rowHtml;
+                } else if (originText.includes("杯") || originText.includes("茶") || originText.includes("汁") || originText.includes("豆漿") || originText.includes("咖啡") || originText.includes("湯") || originText.includes("豆乳") || originText.includes("豆奶")) {
+                    categories.drink.html += rowHtml;
+                } else {
+                    categories.snack.html += rowHtml; 
+                }
+            });
+
+            let finalHtml = '';
+            Object.keys(categories).forEach(key => {
+                const cat = categories[key];
+                if (cat.html !== "") {
+                    finalHtml += `
+                        <div class="category-block ${cat.class}">
+                            <div class="category-title">${cat.title}</div>
+                            ${cat.html}
+                        </div>
+                    `;
+                }
+            });
+
+            return finalHtml || '無明細';
+        }
+
+        function renderAdminTable(orders) {
+            const tbody = document.getElementById('orders-tbody');
+            let html = '';
+
+            orders.forEach(order => {
+                let statusClass = 'status-new';
+                let actionButtonHtml = `<button class="action-btn" onclick="updateOrderStatus('${order.firebaseKey}', '已出餐')">完成出餐 ✔</button>`;
+                
+                if (order.status === '已出餐' || order.status === '已完成') {
+                    statusClass = 'status-done';
+                    actionButtonHtml = `<span style="color:#27ae60; font-size:13px; font-weight:bold;">★ 已完畢</span>`;
+                }
+
+                let displayDate = order.date || '';
+                let displayTime = order.time || '';
+
+                let noteHtml = `<div class="note-empty">無備註</div>`;
+                if (order.note && order.note !== '無') {
+                    noteHtml = `<div class="note-text">📢 ${order.note}</div>`;
+                }
+
+                let categorizedItemsHtml = formatItemsToCategorizedHtml(order.items);
+
+                html += `
+                    <tr>
+                        <td style="font-weight:bold; color:var(--accent-color);">#${order.id || '---'}</td>
+                        <td>
+                            <div style="font-weight:600; font-size:14px;">${order.type || '未填'}</div>
+                            <div style="font-size:11px; color:#888; margin-top:2px;">下單: ${displayDate} ${displayTime}</div>
+                        </td>
+                        <td>
+                            <div style="font-size:13px;">📞 ${order.phone || '無'}</div>
+                            <div style="font-size:12px; color:#10b981; margin-top:2px;">LINE: ${order.line || '無'}</div>
+                        </td>
+                        <td><div class="item-list-text">${categorizedItemsHtml}</div></td>
+                        <td>${noteHtml}</td>
+                        <td style="font-weight:bold; color:#d63031; font-size:16px;">$${order.total || 0}</td>
+                        <td><span class="status-badge ${statusClass}">${order.status || '新訂單'}</span></td>
+                        <td>${actionButtonHtml}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function updateOrderStatus(firebaseKey, newStatus) {
+            database.ref(`orders/${firebaseKey}`).update({
+                status: newStatus
+            })
+            .catch(err => {
+                alert('更改狀態失敗: ' + err.message);
+            });
+        }
+
+        function clearAllOrders() {
+            if (confirm('⚠️ 確定要徹底清空雲端資料庫內的所有訂單紀錄嗎？\n此動作將無法復原！')) {
+                database.ref('orders').remove()
+                .then(() => {
+                    alert('🧹 雲端資料庫已全數清空完畢！');
+                })
+                .catch(err => {
+                    alert('清空失敗: ' + err.message);
+                });
+            }
+        }
+
+        window.onload = function() {
+            listenToFirebaseOrders();
+        };
+    </script>
+</body>
+</html>
