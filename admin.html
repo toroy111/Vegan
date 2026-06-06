@@ -4,20 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>珍愛家素食早午餐 - 後台接單系統</title>
-    <!-- 引入 FontAwesome 經典圖標庫，用來顯示用戶與鎖頭圖標 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --primary-color: #2c3e50; --accent-color: #e67e22; --success-color: #27ae60; --bg-color: #ecf0f1; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
         body { background-color: var(--bg-color); padding: 20px; color: #333; }
         
-        /* 🔒 完美對接 image_293c03.png 的高級毛玻璃登入畫面 */
+        /* 🔒 高級毛玻璃登入畫面 */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=1920') no-repeat center center/cover;
             display: flex; justify-content: center; align-items: center; z-index: 99999;
         }
-        /* 藍色煙燻疊加層，完美複製截圖的深藍冷調色澤 */
         #login-overlay::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(44, 62, 80, 0.65); backdrop-filter: blur(3px); z-index: 1;
@@ -31,7 +29,6 @@
         .input-field-group {
             position: relative; margin-bottom: 18px; width: 100%;
         }
-        /* 膠囊半透明輸入框 */
         .input-field-group input {
             width: 100%; padding: 14px 14px 14px 45px; border: none; 
             background: rgba(255, 255, 255, 0.22); border-radius: 50px;
@@ -39,12 +36,10 @@
         }
         .input-field-group input::placeholder { color: rgba(255, 255, 255, 0.7); font-size: 14px; }
         .input-field-group input:focus { background: rgba(255, 255, 255, 0.32); box-shadow: 0 0 10px rgba(255,255,255,0.2); }
-        /* 輸入框左側精緻小圖標 */
         .input-field-group i {
             position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
             color: rgba(255, 255, 255, 0.7); font-size: 15px;
         }
-        /* 科技亮藍色登入按鈕 */
         .submit-login-btn {
             width: 100%; background-color: #3b66de; color: white; border: none;
             padding: 14px; border-radius: 50px; font-size: 16px; font-weight: bold;
@@ -52,7 +47,6 @@
         }
         .submit-login-btn:hover { background-color: #2a52c7; box-shadow: 0 4px 16px rgba(59, 102, 222, 0.5); }
         
-        /* 輔助功能文字排版區 */
         .login-links-row {
             display: flex; justify-content: space-between; align-items: center;
             color: rgba(255, 255, 255, 0.85); font-size: 13px; margin-bottom: 15px; padding: 0 5px;
@@ -60,7 +54,6 @@
         .login-links-row a { color: rgba(255, 255, 255, 0.85); text-decoration: none; cursor: pointer; }
         .login-links-row a:hover { color: white; text-decoration: underline; }
         
-        /* 仿真開關切換鈕 (Toggle Switch) */
         .remember-crypto { display: flex; align-items: center; gap: 6px; cursor: pointer; }
         .switch-bar {
             position: relative; display: inline-block; width: 34px; height: 18px;
@@ -97,6 +90,10 @@
         .action-btn:hover { background-color: #219653; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .clear-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
         
+        /* 新增：紅色精緻登出按鈕樣式 */
+        .logout-btn { background-color: #d63031; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .logout-btn:hover { background-color: #b32d2d; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+
         .sound-control-panel { background: #34495e; padding: 10px 15px; border-radius: 6px; display: flex; align-items: center; gap: 10px; }
         .sound-select { background: #fff; color: #333; padding: 6px 10px; border-radius: 4px; border: none; font-weight: bold; font-size: 13px; cursor: pointer; }
         .audio-btn { background-color: var(--accent-color); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
@@ -109,49 +106,40 @@
 </head>
 <body>
 
-    <!-- 🔒 登入遮罩視窗 (完美仿製截圖設計) -->
     <div id="login-overlay">
         <div class="login-container">
-            <!-- 頂部 LOGO 區塊 -->
             <div class="login-logo">LOGO</div>
             
-            <!-- 帳號輸入框 -->
             <div class="input-field-group">
                 <i class="fa-solid fa-user"></i>
                 <input type="text" id="username" placeholder="用戶名" onkeypress="handleKeyPress(event)">
             </div>
             
-            <!-- 密碼輸入框 -->
             <div class="input-field-group">
                 <i class="fa-solid fa-lock"></i>
                 <input type="password" id="password" placeholder="密碼" onkeypress="handleKeyPress(event)">
             </div>
             
-            <!-- 亮藍色登入按鈕 -->
             <button class="submit-login-btn" onclick="checkLogin()">登錄</button>
             
-            <!-- 第一排輔助鏈接：記住密碼開關 & 忘記密碼 -->
             <div class="login-links-row">
                 <label class="remember-crypto">
-                    <input type="checkbox" id="remember-check">
+                    <input type="checkbox" id="remember-check" checked>
                     <span class="switch-bar"></span>
                     <span>記住密碼</span>
                 </label>
                 <a onclick="alert('請聯繫系統技術人員協助重設密碼！')">忘記密碼</a>
             </div>
 
-            <!-- 第二排輔助鏈接：創建帳號 & 其他幫助 -->
             <div class="login-links-row">
                 <a onclick="alert('本後台不開放對外註冊，請聯絡店長建立權限。')">創建帳號</a>
-                <a onclick="alert('珍愛家後台系統 V2.0\n已連接：新加坡 (asia-southeast1) 雲端中心')">其他幫助</a>
+                <a onclick="alert('珍愛家後台系統 V2.1\n已啟用全自動安全記住登入狀態功能。')">其他幫助</a>
             </div>
 
-            <!-- 錯誤提示小彈窗 -->
             <div id="error-toast" class="error-toast">❌ 用戶名或密碼不正確，請重新輸入</div>
         </div>
     </div>
 
-    <!-- 🔓 後台真正的主畫面內容 -->
     <div id="admin-main-content">
         <header>
             <div>
@@ -170,8 +158,9 @@
                 <button class="audio-btn" onclick="testSound()">測試音效</button>
             </div>
 
-            <div>
+            <div style="display: flex; gap: 10px; align-items: center;">
                 <button class="clear-btn" onclick="clearAllOrders()">🧹 清空歷史訂單紀錄</button>
+                <button class="logout-btn" onclick="logoutSystem()"><i class="fa-solid fa-right-from-bracket"></i> 登出系統</button>
             </div>
         </header>
 
@@ -199,12 +188,10 @@
         </div>
     </div>
 
-    <!-- 載入 Firebase 核心與資料庫模組 -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
-        // Firebase 連線設定 (採用新加坡專屬雲端網址)
         const firebaseConfig = {
             apiKey: "AlzaSyAgeP2a6Z-TqJaZ5F0j_2UoXVQ_WE3sckw",
             authDomain: "toroy111-3219c.firebaseapp.com",
@@ -218,16 +205,21 @@
         let database = null;
         let lastKnownTopOrderKey = null;
 
-        // 🔒 登入功能驗證 (帳號: admin, 密碼: jenaijia520)
+        // 🔒 登入功能驗證 (新增 localStorage 快取登入狀態)
         function checkLogin() {
             const userIn = document.getElementById('username').value.trim();
             const passIn = document.getElementById('password').value.trim();
+            const isRemember = document.getElementById('remember-check').checked;
             const errToast = document.getElementById('error-toast');
 
             if (userIn === "admin" && passIn === "jenaijia520") {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('admin-main-content').style.display = 'block';
-                startAdminSystem();
+                // 如果勾選記住密碼就存入 localStorage
+                if (isRemember) {
+                    localStorage.setItem('jenaijia_logged_in', 'true');
+                } else {
+                    sessionStorage.setItem('jenaijia_logged_in', 'true');
+                }
+                executeLoginSuccess();
             } else {
                 errToast.style.display = 'block';
                 document.getElementById('password').value = '';
@@ -235,10 +227,27 @@
             }
         }
 
+        // 登入驗證通過後的共用執行邏輯
+        function executeLoginSuccess() {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('admin-main-content').style.display = 'block';
+            startAdminSystem();
+        }
+
+        // 🚪 新增：手動點擊登出系統功能
+        function logoutSystem() {
+            if (confirm('確定要登出珍愛家管理接單系統嗎？')) {
+                localStorage.removeItem('jenaijia_logged_in');
+                sessionStorage.removeItem('jenaijia_logged_in');
+                window.location.reload(); // 重新載入，網頁就會恢復為鎖定畫面
+            }
+        }
+
         function handleKeyPress(event) {
             if (event.key === "Enter") { checkLogin(); }
         }
 
+        // 依然保持你原本登入成功才初始化連線的安全機制
         function startAdminSystem() {
             if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
             database = firebase.database();
@@ -372,6 +381,17 @@
                 database.ref('orders').remove().then(() => { alert('🧹 雲端資料庫已全數清空！'); });
             }
         }
+
+        // 🌟 新增：網頁一打開（或按 F5 重新整理）時，自動檢查瀏覽器有沒有儲存過登入紀錄
+        window.onload = function() {
+            const hasLocalRecord = localStorage.getItem('jenaijia_logged_in');
+            const hasSessionRecord = sessionStorage.getItem('jenaijia_logged_in');
+            
+            // 如果有其中一種登入紀錄，就不顯示登入畫面，直接通關進入後台！
+            if (hasLocalRecord === 'true' || hasSessionRecord === 'true') {
+                executeLoginSuccess();
+            }
+        };
     </script>
 </body>
 </html>
